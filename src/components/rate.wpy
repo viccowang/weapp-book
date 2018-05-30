@@ -1,0 +1,53 @@
+<template>
+    <view class="rate">
+        <repeat for="{{rateRange}}" key="index" item="item">
+            <view class="star iconfont {{item.full ? 'icon-star-full' : 'icon-star-empty'}}"></view>
+        </repeat>
+    </view>
+</template>
+<script>
+import wepy from 'wepy'
+
+export default class RateComponent extends wepy.component {
+  data = {
+    rateRange: []
+  }
+
+  props = {
+    book: {
+      type: Object
+    }
+  }
+
+  onLoad () {
+    if (this.book) {
+      const rate = Math.round(this.book.rate)
+      for (let i = 0; i < 5; i++) {
+        this.rateRange.push({ star: i, full: (i < rate) })
+      }
+    }
+  }
+}
+</script>
+<style lang="less">
+.rate {
+    display: flex;
+    flex-direction: row;
+    width: 250rpx;
+
+    .star {
+        width:65rpx;
+        height:65rpx;
+        margin:0 5rpx;
+        font-size:45rpx !important;
+
+        &.icon-star-full {
+            color: #fdd835
+        }
+
+        &.icon-star-empty {
+            color: #cfd8dc
+        }
+    }
+}
+</style>

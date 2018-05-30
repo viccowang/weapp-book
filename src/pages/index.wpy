@@ -1,0 +1,102 @@
+<template>
+    <view class="container">
+        <button wx:if="{{!isAuthorized}}" class="user-info iconfont icon-wodedianji" open-type="getUserInfo" @tap="getUserInfo"></button>
+        <view class="area borrow-book" @tap="scanCode('borrow')">
+            <text>借</text>
+        </view>
+        <view class="area return-book" @tap="scanCode('return')">
+            <text>还</text>
+        </view>
+        <view class="weui-footer">
+            <view class="weui-footer__text">Copyright © 2018 Vicco&QianDX</view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import { authUserInfo } from '@/utils/authUserInfo'
+import { scanCodeToShowBookInfo } from '@/utils/scanCode'
+
+@connect({
+  isAuthorized (state) {
+    return state.user.isAuthorized
+  }
+})
+export default class IndexPage extends wepy.page {
+  config = {
+    disableScroll: true
+  }
+
+  data = {
+  }
+
+  onLoad () {
+    authUserInfo()
+  }
+
+  methods = {
+    getUserInfo () {
+      authUserInfo()
+    },
+    scanCode (type) {
+      if (!this.isAuthorized) {
+        wepy.showModal({
+          content: '请点击右上角的用户图标使小程序获取用户权限才能继续操作.',
+          showCancel: false,
+          success() {}
+        })
+      } else {
+        scanCodeToShowBookInfo('navigateTo')
+      }
+    }
+  }
+}
+</script>
+<style lang="less">
+.container{
+    width:100%;
+    height:100vh;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #eceff1;
+
+    .user-info {
+      position:absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      right:60rpx;
+      top:40rpx;
+      font-size:45rpx;
+      color: #455a64;
+      padding: 0;
+      width:75rpx;
+      height:75rpx;
+      border:none;
+      background:none;
+    }
+
+    .area {
+        width:85%;
+        height:32vh;
+        margin:35rpx 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-size:100rpx;
+        border-radius:25rpx;
+        box-shadow:0 5px 5px -3px rgba(0,0,0,.1), 0 8px 20px 1px rgba(0,0,0,.14);
+    }
+
+    .borrow-book{
+        background-color: #29b6f6;
+    }
+
+    .return-book {
+        background-color: #3f51b5;
+    }
+}
+</style>

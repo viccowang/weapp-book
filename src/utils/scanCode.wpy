@@ -1,0 +1,36 @@
+<script>
+import wepy from 'wepy'
+
+function scanCodeToShowBookInfo (navType) {
+  const reg = /^9787[0-9]{9}$/g
+  wepy.scanCode({
+    onlyFromCamera: true,
+    scanType: ['barCode'],
+    success (res) {
+      if (res) {
+        const bookCode = res.result
+        if (reg.test(bookCode)) {
+          wepy[navType]({
+            url: `./bookInfo?bookId=${res.result}`
+          })
+        } else {
+          wepy.showModal({
+            content: '没有扫描到书籍的条形码.',
+            showCancel: false
+          })
+        }
+      }
+    },
+    fail () {
+      wepy.redirectTo({
+        url: './index'
+      })
+    }
+  })
+}
+
+module.exports = {
+  scanCodeToShowBookInfo
+}
+
+</script>

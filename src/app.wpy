@@ -1,0 +1,103 @@
+<style lang="scss">
+@import 'common/weui/weui.wxss';
+@import './common/font/iconfont';
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+
+import { setStore } from 'wepy-redux'
+import configStore from './store'
+
+const store = configStore()
+setStore(store)
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/index',
+      'pages/list',
+      'pages/bookInfo',
+      'pages/success'
+    ],
+    tabBar: {
+      color: '#90a4ae',
+      selectedColor: '#02a9f4',
+      list: [
+        {pagePath: 'pages/index', text: '借阅', iconPath: '/static/book-gray.png', selectedIconPath: '/static/book-active.png'},
+        {pagePath: 'pages/list', text: '我的', iconPath: '/static/list-gray.png', selectedIconPath: '/static/list-active.png'}
+      ]
+    },
+    window: {
+      backgroundTextStyle: 'light',
+      navigationBarBackgroundColor: '#fff',
+      navigationBarTitleText: 'SENDO书架',
+      navigationBarTextStyle: 'black'
+    }
+  }
+
+  globalData = {
+    isAuthorized: false,
+    userInfo: null
+  }
+
+  constructor () {
+    super()
+    this.use('requestfix')
+  }
+
+  onLaunch() {
+    wepy.checkSession({
+        // 未过期
+      success () {
+        console.log('session 未过期')
+      },
+        // 过期
+      fail () {
+        wepy.login({
+          success (res) {
+            console.log('session 过期,重新登陆成功!')
+          }
+        })
+      }
+    })
+  }
+
+  // sleep (s) {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       resolve('promise resolved')
+  //     }, s * 1000)
+  //   })
+  // }
+
+  // async testAsync () {
+  //   const data = await this.sleep(3)
+  //   console.log(data)
+  // }
+
+  // getUserInfo(cb) {
+  //   const that = this
+  //   if (this.globalData.userInfo) {
+  //     return this.globalData.userInfo
+  //   }
+  //   wepy.getUserInfo({
+  //     success (res) {
+  //       console.log(res)
+  //       that.globalData.userInfo = res.userInfo
+  //       cb && cb(res.userInfo)
+  //     }
+  //   })
+  // }
+}
+</script>

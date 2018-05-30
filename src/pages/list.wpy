@@ -1,0 +1,254 @@
+<template>
+    <scroll-view scroll-y="{{true}}" class="page">
+      <view wx:if="{{isAuthorized}}">
+        <view class="header">
+            <image class="avatar" src="{{userInfo.avatarUrl}}" /> 
+            <view class="nickName">{{userInfo.nickName}}</view>
+        </view>
+        <view class="bookList">
+            <view class="list" wx:if="{{bookList.length}}">
+              <repeat for="{{bookList}}" key="index" item="book">
+                <view class="list-cell">
+                  <view class="list-cell-image">
+                    <image class="book-image" src="{{book.image}}"></image>
+                  </view>
+                  <view class="list-cell-content">
+                      <view class="list-cell-line title">书名: {{book.title}}</view>
+                      <view class="list-cell-line authro">作者: {{book.author}}</view>
+                      <view class="list-cell-line summary">简介: 啊是的俩是大发牢骚款到即发老师的课件发了深刻的减肥啦数控刀具flask地方</view>
+                      <view class="list-cell-line date">借阅时间: {{book.borrowDate}}</view>
+                  </view>
+                </view>
+              </repeat>  
+            </view>
+            <view class="empty" wx:else>
+                <text>时间是不等人滴~阅读就从现在开始</text>
+            </view>
+        </view>
+      </view>  
+      <view class="noLoginPage" wx:else>
+         <button wx:if="{{!isAuthorized}}" class="loginBtn" open-type="getUserInfo" @tap="getUserInfo">快速登录</button>
+      </view>
+    </scroll-view>
+</template>
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+import { authUserInfo } from '@/utils/authUserInfo'
+
+@connect({
+  userInfo (state) {
+    return state.user.userInfo
+  },
+  isAuthorized (state) {
+    return state.user.isAuthorized
+  }
+})
+export default class MyBookList extends wepy.page {
+  data = {
+    bookList: [
+      {
+        title: '你的第一本哲学书',
+        author: '张三, 李四',
+        image: 'https://img3.doubanio.com/view/subject/m/public/s29114780.jpg',
+        borrowDate: '2018-10-10'
+      },
+      {
+        title: '疯狂人类进化史',
+        author: '张三, 李四',
+        image: 'https://img3.doubanio.com/view/subject/m/public/s28688090.jpg',
+        borrowDate: '2018-10-10'
+      },
+      {
+        title: '贾德谈人生',
+        author: '张三, 李四',
+        image: 'https://img3.doubanio.com/view/subject/m/public/s29574982.jpg',
+        borrowDate: '2018-10-10'
+      },
+      {
+        title: '你的第一本哲学书',
+        author: '张三, 李四',
+        image: 'https://img3.doubanio.com/view/subject/m/public/s29114780.jpg',
+        borrowDate: '2018-10-10'
+      },
+      {
+        title: '疯狂人类进化史',
+        author: '张三, 李四',
+        image: 'https://img3.doubanio.com/view/subject/m/public/s28688090.jpg',
+        borrowDate: '2018-10-10'
+      },
+      {
+        title: '贾德谈人生',
+        author: '张三, 李四',
+        image: 'https://img3.doubanio.com/view/subject/m/public/s29574982.jpg',
+        borrowDate: '2018-10-10'
+      },
+      {
+        title: '你的第一本哲学书',
+        author: '张三, 李四',
+        image: 'https://img3.doubanio.com/view/subject/m/public/s29114780.jpg',
+        borrowDate: '2018-10-10'
+      },
+      {
+        title: '疯狂人类进化史',
+        author: '张三, 李四',
+        image: 'https://img3.doubanio.com/view/subject/m/public/s28688090.jpg',
+        borrowDate: '2018-10-10'
+      },
+      {
+        title: '贾德谈人生',
+        author: '张三, 李四',
+        image: 'https://img3.doubanio.com/view/subject/m/public/s29574982.jpg',
+        borrowDate: '2018-10-10'
+      }
+    ]
+  }
+
+  methods = {
+    getUserInfo () {
+      authUserInfo()
+    }
+  }
+}
+</script>
+<style lang="less">
+.page{
+  width:100%;
+  height:100vh;
+  display: flex;
+  flex-direction: column;
+
+  .noLoginPage {
+    width:100%;
+    height:100vh;
+    background: #eceff1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .loginBtn {
+
+    }
+  }
+
+  .header {
+    width:100%;
+    height:220rpx;
+    background: #cfd8dc;
+    border-bottom: 1px solid #cfd8dc;
+
+    .avatar{
+      position:absolute;
+      left:50rpx;
+      top:50rpx;
+      width:120rpx;
+      height:120rpx;
+      border-radius:100rpx;
+      background:#b0bec5;
+    }
+
+    .nickName {
+      position:absolute;
+      top:90rpx;
+      left:200rpx;
+      font-size:28rpx;
+    }
+
+    .loginBtn {
+      width:120rpx;
+      position:absolute;
+      top:75rpx;
+      left:200rpx;
+      padding:0;
+      margin:0;
+      font-size:28rpx;
+      color:#fff;
+      background:none;
+
+      &:after {
+        border:none;
+      }
+    }
+
+  }
+
+  .bookList {
+    background:#fff;
+
+    .list {
+      font-size:28rpx;
+
+      .list-cell {
+        display: flex;
+        padding: 15rpx;
+        height: 220rpx;
+        box-sizing: border-box;
+        border-bottom: 1px solid #cfd8dc;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+
+        .list-cell-image {
+          width: 130rpx;
+          height: 180rpx;
+          margin-right:15rpx;
+
+          .book-image {
+            width: 130rpx;
+            height: 190rpx;
+            box-shadow: 0 5px 8px rgba(0,0,0,.15);
+          }
+
+        }
+
+        .list-cell-content {
+          flex:1 auto;
+          display: flex;
+          flex-direction: column;
+          margin-left:10rpx;
+          color: #455a64;
+
+          .list-cell-line {
+            width:100%;
+            padding: 3rpx 0;
+
+            &.title {
+
+            }
+
+            &.summary {
+              width: 70vw;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              word-break: break-all;
+              white-space:nowrap;
+            }
+
+            &.date {
+
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+    // .title, .date {
+    //   font-size:30rpx;
+    // }
+     
+     .empty{
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       font-size:28rpx;
+       padding:35px 0;
+     }
+  }
+}
+</style>

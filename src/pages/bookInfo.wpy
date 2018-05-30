@@ -1,0 +1,254 @@
+<template>
+    <scroll-view scroll-y="{{true}}" class="container">
+        <view class="header" style="background:url({{bookInfo.images.large}}) 100% 100% no-repeat;filter:blur(15rpx)" />
+        <cover-view class="header-bookImg">
+            <cover-image class="image" mode="" src="{{bookInfo.images.medium}}" />
+        </cover-view>
+        <view class="bookInfo">
+            <view class="block bookDesc" id="bookInfo" >
+                <text class="line title">书名: {{bookInfo.title}}</text>
+                <text class="line subTitle" wx:if="{{bookInfo.subtitle !== ''}}">副书名:</text>
+                <text class="line author">作者: {{bookInfo.author}}</text>
+                <text class="line translator" wx:if="{{bookInfo.translator !== ''}}">翻译: {{bookInfo.translator}}</text>
+                <text class="line desc" style="height:{{bookDescHeight}}">{{bookInfo.summary}}</text>
+                <view class="handle-more" wx:if="{{isShowBookDeskHandler}}" @tap="displayFullBookInfo">点击加载更多</view>
+            </view>
+            <view class="block rate">
+                <rateCom :book.sync="bookInfo"></rateCom>
+            </view>
+            <view class="block submit">
+                <button class="weui-btn" type="primary" @tap="confirmToBorrow">借阅</button>
+            </view>
+        </view>
+    </scroll-view>
+</template>
+<script>
+import wepy from 'wepy'
+// components
+import RateComponent from '../components/rate'
+
+export default class BookInfo extends wepy.page {
+  components = {
+    rateCom: RateComponent
+  }
+
+  data = {
+    bookId: null,
+    isShowBookDeskHandler: false,
+    bookDescHeight: 'auto',
+    backColor: '',
+    bookInfo: {
+      title: '',
+      subtitle: '',
+      tags: [],
+      images: {
+        small: '',
+        large: ''
+      },
+      author_intro: '',
+      summary: '',
+      rate: '2.5'
+    }
+  }
+
+  initBookPage (bookInfo) {
+    this.bookInfo = Object.assign({}, this.bookInfo, bookInfo)
+    this.bookInfo.author = bookInfo.author.length ? bookInfo.author.join(', ') : '暂无'
+    this.bookInfo.translator = bookInfo.translator.length ? bookInfo.translator.join(', ') : ''
+  }
+
+ // 这里应该首先请求后端服务获取图书信息,
+ // 如果有则弹出详情
+  onLoad (queryData) {
+    const self = this
+    const bookId = queryData.bookId
+    // console.log(queryData)
+    if (bookId) {
+      wepy.showLoading({
+        title: '正在读取图书信息'
+      })
+      this.bookId = bookId
+      wepy.request({
+        url: `http://39.107.77.177/v2/book/isbn/${bookId}`,
+        header: {
+          'content-type': 'json' // 默认值
+        },
+        success (res) {
+          self.initBookPage(res.data)
+          self.$apply()
+          //
+          self.getBookCurrentPos()
+          //
+          wepy.hideLoading()
+        },
+        fail () {
+          wepy.hideLoading()
+          wepy.showModal({
+            title: '有点问题',
+            content: '获取服务器书籍信息失败, 请在群中联系[钱大仙]同学处理.',
+            showCancel: false,
+            success (res) {
+              wepy.redirectTo({
+                url: './index'
+              })
+            }
+          })
+        }
+      })
+    }
+  }
+
+  getBookCurrentPos () {
+    const query = wepy.createSelectorQuery()
+    query.select('#bookInfo').boundingClientRect()
+
+    query.exec(res => {
+      if (res[0].height > 350) {
+        this.isShowBookDeskHandler = true
+        this.bookDescHeight = '350rpx'
+        this.$apply()
+      }
+    })
+  }
+
+  //
+  methods = {
+    // 借阅
+    confirmToBorrow () {
+      wepy.showModal({
+        title: '提醒',
+        content: `确定要借阅<<${this.bookInfo.title}>>吗?`,
+        confirmText: '就这本了',
+        cancelText: '再想想',
+        success (res) {
+          if (res.confirm) {
+            // 借阅
+            wepy.showLoading({
+              title: '管理员拿书去啦,稍等...'
+            })
+
+            setTimeout(() => {
+              wepy.hideLoading()
+              wepy.redirectTo({
+                url: './success'
+              })
+            }, 1000)
+          }
+        }
+      })
+    },
+    displayFullBookInfo () {
+      this.isShowBookDeskHandler = false
+      this.bookDescHeight = 'auto'
+    }
+  }
+}
+</script>
+<style lang="less">
+.container {
+    width:100%;
+    height:100vh;
+    display: flex;
+    flex-direction: column;
+
+    .header {
+        width:100%;
+        height: 400rpx;
+        background-color: #cfd8dc;
+
+        .header-mask {
+          position:absolute;
+          top:0;left:0;
+          width:100%;
+          height:400rpx;
+          opacity:.2;
+          overflow:hidden;
+        }
+    }
+
+    .header-bookImg {
+        position:absolute;
+        top:40px; left: 50%;
+        margin-left: -130rpx;
+        width:262rpx;
+        height:390rpx;
+        overflow:hidden;
+        box-shadow:0 5rpx 15rpx rgba(0,0,0,.25);
+
+        .image {
+            width: 255rpx;
+            height:380rpx;
+            border: 2px solid #eceff1;
+        }
+    }
+
+    .bookInfo {
+        width:100%;
+        flex:1;
+        padding-top:90rpx;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        font-size:30rpx;
+
+        .block {
+            width:90%;
+            padding:15rpx;
+            border: 1rpx solid #cfd8dc;
+            border-radius: 8rpx;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+
+            &.bookDesc {
+
+                .desc {
+                    font-size:28rpx;
+                    overflow: hidden;
+                }
+
+                .handle-more {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding-top:10rpx;
+                    border-top: 1rpx solid #cfd8dc;
+                }
+
+            }
+
+            &.rate {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              margin-top:15rpx;
+
+              .rateText {
+                width:100rpx;
+              }
+
+            }
+
+            .line {
+                flex:1;
+                width: 100%;
+                padding: 20rpx 0;
+                border-bottom: 1px dotted #cfd8dc;
+
+                &:last-child {
+                    border-bottom: none;
+                }
+            }
+        }
+
+        .submit {
+          border:none;
+          padding:0;
+          margin:15rpx 0;
+          display: block;
+        }
+    }
+    
+    
+}
+</style>
