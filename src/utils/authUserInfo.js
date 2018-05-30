@@ -1,11 +1,10 @@
-<script>
 import wepy from 'wepy'
 import { SET_USERINFO } from '@/store/types'
 import { getStore } from 'wepy-redux'
 
 const store = getStore()
 
-function authUserInfo () {
+export function authUserInfo () {
   wepy.getUserInfo({
     success (res) {
       store.dispatch({
@@ -21,9 +20,3 @@ function authUserInfo () {
     }
   })
 }
-
-module.exports = {
-  authUserInfo
-}
-
-</script>

@@ -1,15 +1,6 @@
-<script>
 import wepy from 'wepy'
 
-const UrlPerfix = 'http://192.168.10.241:3000/mock/200'
-
-function get ({ url, data }) {
-  return request({ url, method: 'GET', data: data || null })
-}
-
-function post ({url, data}) {
-  return request({url, data, method: 'POST'})
-}
+const remoteServer = 'http://192.168.10.241:3000'
 
 function handlerStatus (res) {
   if (res.statusCode === 200) {
@@ -39,9 +30,8 @@ function handlerResponse (res) {
 
 function request ({ url, method, data }) {
   return new Promise((resolve, reject) => {
-    console.log(UrlPerfix + url)
     wepy.request({
-      url: UrlPerfix + url,
+      url: remoteServer + url,
       method,
       data,
       header: {
@@ -57,9 +47,15 @@ function request ({ url, method, data }) {
   })
 }
 
-module.exports = {
+function get ({ url, data }) {
+  return request({ url, method: 'GET', data: data || null })
+}
+
+function post ({url, data}) {
+  return request({url, data, method: 'POST'})
+}
+
+export {
   get,
   post
 }
-
-</script>

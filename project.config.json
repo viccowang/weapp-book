@@ -11,5 +11,6 @@
 	"appid": "wx00eb35e13b5fdd7e",
 	"projectname": "wxapp-book",
 	"miniprogramRoot": "./dist",
+	"libVersion": "2.0.8",
 	"condition": {}
 }

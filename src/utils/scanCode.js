@@ -1,4 +1,3 @@
-<script>
 import wepy from 'wepy'
 
 const reg = /^9787[0-9]{9}$/g
@@ -63,14 +62,14 @@ function scanCodeToReturnBook (navType) {
             }
           }
         })
+      } else {
+        showError('没有扫到书籍条形码')
       }
     }
   })
 }
 
-module.exports = {
+export {
   scanCodeToShowBookInfo,
   scanCodeToReturnBook
 }
-
-</script>
