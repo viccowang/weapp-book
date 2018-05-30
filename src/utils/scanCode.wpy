@@ -1,36 +1,76 @@
 <script>
 import wepy from 'wepy'
 
-function scanCodeToShowBookInfo (navType) {
-  const reg = /^9787[0-9]{9}$/g
-  wepy.scanCode({
-    onlyFromCamera: true,
-    scanType: ['barCode'],
-    success (res) {
-      if (res) {
-        const bookCode = res.result
-        if (reg.test(bookCode)) {
-          wepy[navType]({
-            url: `./bookInfo?bookId=${res.result}`
-          })
-        } else {
-          wepy.showModal({
-            content: '没有扫描到书籍的条形码.',
-            showCancel: false
-          })
-        }
+const reg = /^9787[0-9]{9}$/g
+
+function scanCode () {
+  return new Promise((resolve, reject) => {
+    wepy.scanCode({
+      onlyFromCamera: true,
+      scanType: ['barCode'],
+      success (res) {
+        resolve(res)
+      },
+      fail (error) {
+        reject(error)
       }
-    },
-    fail () {
-      wepy.redirectTo({
-        url: './index'
-      })
+    })
+  })
+}
+
+function showError(msg) {
+  wepy.showModal({
+    content: msg,
+    showCancel: false
+  })
+}
+
+function scanCodeToShowBookInfo (navType) {
+  scanCode().then(res => {
+    if (res) {
+      const bookCode = res.result
+      if (reg.test(bookCode)) {
+        wepy[navType]({
+          url: `./bookInfo?bookId=${res.result}&readOnly=false`
+        })
+      } else {
+        showError('没有扫到书籍条形码')
+      }
+    }
+  }, () => {
+    wepy.redirectTo({
+      url: './index'
+    })
+  })
+}
+
+function scanCodeToReturnBook (navType) {
+  scanCode().then(res => {
+    if (res) {
+      const bookCode = res.result
+      if (reg.test(bookCode)) {
+        // TODO: 这里之前需要做书验证,是否在库里被借阅等等
+        wepy.showModal({
+          title: '还书提醒',
+          content: `确定要还吗?`,
+          confirmText: '还书',
+          cancelText: '再想想',
+          success(res) {
+            if (res.confirm) {
+              wepy[navType]({
+                url: './turnback'
+              })
+            }
+          }
+        })
+      }
     }
   })
 }
 
 module.exports = {
-  scanCodeToShowBookInfo
+  scanCodeToShowBookInfo,
+  scanCodeToReturnBook
 }
 
 </script>

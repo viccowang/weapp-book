@@ -2,29 +2,33 @@
     <view class="page">
         <view class="success">
             <icon type="success" size="93"></icon>
-            <view class="success-con">借阅成功! 记得归还哦~</view>
+            <view class="success-con">学海无涯 ~ 还书成功!</view>
         </view>
         <view class="control">
-            <button class="ctrlBtn weui-btn" type="default" @tap="scanCode">再借一本</button>
-            <button class="ctrlBtn weui-btn" type="primary" @tap="toMyBag">我的书架</button>
+            <button class="ctrlBtn weui-btn" type="primary" @tap="goHome">回首页</button>
+            <button class="ctrlBtn weui-btn" type="default" @tap="rateBook">评价本书</button>
             </view>
         </view>
     </view>
 </template>
 <script>
 import wepy from 'wepy'
-import { scanCodeToShowBookInfo } from '@/utils/scanCode'
+import { scanCodeToReturnBook } from '@/utils/scanCode'
 
-export default class BorrowSuccess extends wepy.page {
+export default class TurnBackBook extends wepy.page {
   methods = {
-      //
+    //
     scanCode () {
-      scanCodeToShowBookInfo('redirectTo')
+      scanCodeToReturnBook('redirectTo')
     },
     //
-    toMyBag () {
-      wepy.switchTab({
-        url: './list'
+    goHome () {
+      wepy.navigateBack()
+    },
+    //
+    rateBook () {
+      wepy.navigateTo({
+        url: './rateBook'
       })
     }
   }

@@ -1,10 +1,10 @@
 <template>
     <view class="container">
         <button wx:if="{{!isAuthorized}}" class="user-info iconfont icon-wodedianji" open-type="getUserInfo" @tap="getUserInfo"></button>
-        <view class="area borrow-book" @tap="scanCode('borrow')">
+        <view class="area borrow-book" hover-class="borrow-book-hover" @tap="scanCode('borrow')">
             <text>借</text>
         </view>
-        <view class="area return-book" @tap="scanCode('return')">
+        <view class="area return-book" hover-class="return-book-hover" @tap="scanCode('return')">
             <text>还</text>
         </view>
         <view class="weui-footer">
@@ -16,12 +16,10 @@
 import wepy from 'wepy'
 import { connect } from 'wepy-redux'
 import { authUserInfo } from '@/utils/authUserInfo'
-import { scanCodeToShowBookInfo } from '@/utils/scanCode'
+import { scanCodeToShowBookInfo, scanCodeToReturnBook } from '@/utils/scanCode'
 
 @connect({
-  isAuthorized (state) {
-    return state.user.isAuthorized
-  }
+  isAuthorized: state => state.user.isAuthorized
 })
 export default class IndexPage extends wepy.page {
   config = {
@@ -47,7 +45,11 @@ export default class IndexPage extends wepy.page {
           success() {}
         })
       } else {
-        scanCodeToShowBookInfo('navigateTo')
+        if (type === 'borrow') {
+          scanCodeToShowBookInfo('navigateTo')
+        } else if (type === 'return') {
+          scanCodeToReturnBook('navigateTo')
+        } else {}
       }
     }
   }
@@ -95,8 +97,16 @@ export default class IndexPage extends wepy.page {
         background-color: #29b6f6;
     }
 
+    .borrow-book-hover {
+      background-color: darken(#29b6f6,10%);
+    }
+
     .return-book {
         background-color: #3f51b5;
+    }
+
+     .return-book-hover {
+      background-color: darken(#3f51b5,10%);
     }
 }
 </style>

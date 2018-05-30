@@ -1,5 +1,5 @@
 <template>
-    <scroll-view scroll-y="{{true}}" class="page">
+    <view class="page">
       <view wx:if="{{isAuthorized}}">
         <view class="header">
             <image class="avatar" src="{{userInfo.avatarUrl}}" /> 
@@ -8,7 +8,7 @@
         <view class="bookList">
             <view class="list" wx:if="{{bookList.length}}">
               <repeat for="{{bookList}}" key="index" item="book">
-                <view class="list-cell">
+                <view class="list-cell" hover-class="list-cell-hover" @tap="showBookDetail({{book}})">
                   <view class="list-cell-image">
                     <image class="book-image" src="{{book.image}}"></image>
                   </view>
@@ -29,7 +29,7 @@
       <view class="noLoginPage" wx:else>
          <button wx:if="{{!isAuthorized}}" class="loginBtn" open-type="getUserInfo" @tap="getUserInfo">快速登录</button>
       </view>
-    </scroll-view>
+    </view>
 </template>
 <script>
 import wepy from 'wepy'
@@ -37,66 +37,79 @@ import { connect } from 'wepy-redux'
 import { authUserInfo } from '@/utils/authUserInfo'
 
 @connect({
-  userInfo (state) {
-    return state.user.userInfo
-  },
-  isAuthorized (state) {
-    return state.user.isAuthorized
-  }
+  userInfo: state => state.user.userInfo,
+  isAuthorized: state => state.user.isAuthorized
 })
 export default class MyBookList extends wepy.page {
+  config = {
+    navigationBarBackgroundColor: '#b0bec5',
+    backgroundColor: '#b0bec5',
+    navigationBarTextStyle: 'white',
+    navigationBarTitleText: '我的书架',
+    enablePullDownRefresh: true
+  }
+
   data = {
     bookList: [
       {
         title: '你的第一本哲学书',
+        bookId: '9787506395021',
         author: '张三, 李四',
         image: 'https://img3.doubanio.com/view/subject/m/public/s29114780.jpg',
         borrowDate: '2018-10-10'
       },
       {
         title: '疯狂人类进化史',
+        bookId: '9787506395021',
         author: '张三, 李四',
         image: 'https://img3.doubanio.com/view/subject/m/public/s28688090.jpg',
         borrowDate: '2018-10-10'
       },
       {
         title: '贾德谈人生',
+        bookId: '9787506395021',
         author: '张三, 李四',
         image: 'https://img3.doubanio.com/view/subject/m/public/s29574982.jpg',
         borrowDate: '2018-10-10'
       },
       {
         title: '你的第一本哲学书',
+        bookId: '9787506395021',
         author: '张三, 李四',
         image: 'https://img3.doubanio.com/view/subject/m/public/s29114780.jpg',
         borrowDate: '2018-10-10'
       },
       {
         title: '疯狂人类进化史',
+        bookId: '9787506395021',
         author: '张三, 李四',
         image: 'https://img3.doubanio.com/view/subject/m/public/s28688090.jpg',
         borrowDate: '2018-10-10'
       },
       {
         title: '贾德谈人生',
+        bookId: '9787506395021',
         author: '张三, 李四',
         image: 'https://img3.doubanio.com/view/subject/m/public/s29574982.jpg',
         borrowDate: '2018-10-10'
       },
       {
         title: '你的第一本哲学书',
+        bookId: '9787506395021',
         author: '张三, 李四',
         image: 'https://img3.doubanio.com/view/subject/m/public/s29114780.jpg',
         borrowDate: '2018-10-10'
       },
       {
         title: '疯狂人类进化史',
+        bookId: '9787506395021',
         author: '张三, 李四',
         image: 'https://img3.doubanio.com/view/subject/m/public/s28688090.jpg',
         borrowDate: '2018-10-10'
       },
       {
         title: '贾德谈人生',
+        bookId: '9787506395021',
         author: '张三, 李四',
         image: 'https://img3.doubanio.com/view/subject/m/public/s29574982.jpg',
         borrowDate: '2018-10-10'
@@ -104,9 +117,23 @@ export default class MyBookList extends wepy.page {
     ]
   }
 
+  onPullDownRefresh () {
+    wepy.showNavigationBarLoading()
+    setTimeout(() => {
+      wepy.stopPullDownRefresh()
+      wepy.hideNavigationBarLoading()
+      this.$apply()
+    }, 1000)
+  }
+
   methods = {
     getUserInfo () {
       authUserInfo()
+    },
+    showBookDetail (book) {
+      wepy.navigateTo({
+        url: `./bookInfo?bookId=${book.bookId}&readOnly=true`
+      })
     }
   }
 }
@@ -134,7 +161,8 @@ export default class MyBookList extends wepy.page {
   .header {
     width:100%;
     height:220rpx;
-    background: #cfd8dc;
+    position:relative;
+    background: #b0bec5;
     border-bottom: 1px solid #cfd8dc;
 
     .avatar{
@@ -176,14 +204,14 @@ export default class MyBookList extends wepy.page {
     background:#fff;
 
     .list {
-      font-size:28rpx;
+      font-size:26rpx;
 
       .list-cell {
         display: flex;
         padding: 15rpx;
         height: 220rpx;
         box-sizing: border-box;
-        border-bottom: 1px solid #cfd8dc;
+        border-bottom: 1px solid lighten(#cfd8dc, 10%);
 
         &:last-child {
           border-bottom: none;
@@ -207,12 +235,12 @@ export default class MyBookList extends wepy.page {
           flex:1 auto;
           display: flex;
           flex-direction: column;
-          margin-left:10rpx;
-          color: #455a64;
+          margin-left:15rpx;
+          color: lighten(#455a64, 5%);
 
           .list-cell-line {
             width:100%;
-            padding: 3rpx 0;
+            padding: 4rpx 0;
 
             &.title {
 
@@ -234,6 +262,10 @@ export default class MyBookList extends wepy.page {
 
         }
 
+      }
+
+      .list-cell-hover {
+        background-color: #eceff1;
       }
 
     }

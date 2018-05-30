@@ -1,0 +1,107 @@
+<template>
+    <view class="page">
+      <view class="rate-area">
+        <text class="title">评价该书</text>
+        <rateCom class="bigStar" :rate.sync="rate" :editable.sync="editable" />
+      </view>
+      <view class="control">
+        <button class="rateBtn weui-btn" type="primary" @tap="rateBook">评 价</button>
+      </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy'
+// components
+import RateComponent from '@/components/rate'
+
+export default class RateBook extends wepy.page {
+  components = {
+    rateCom: RateComponent
+  }
+
+  data = {
+    rate: '',
+    editable: true
+  }
+
+  watch = {
+    rate (newVal) {
+    }
+  }
+
+  onLoad () {
+    this.rate = '3.0'
+  }
+
+  methods = {
+    rateBook () {
+      console.log('rate book:', this.rate)
+      wepy.showLoading({
+        title: '评价中...'
+      })
+      setTimeout(() => {
+        wepy.hideLoading()
+          //
+        wepy.showToast({
+          title: '评价完成',
+          icon: 'success',
+          success () {
+            setTimeout(() => {
+              wepy.switchTab({
+                url: 'index'
+              })
+            }, 700)
+          }
+        })
+      }, 500)
+    }
+  }
+}
+</script>
+<style lang="less">
+.page {
+
+
+  .rate-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 40rpx 20rpx 20rpx 20rpx;
+    margin-top:15rpx;
+    border: 1px solid lighten(#cfd8dc, 2%);
+    border-radius:8rpx;
+
+    .title {
+      width:100%;
+      text-align: center;
+      padding-bottom: 10rpx;
+      border-bottom: 1px solid lighten(#cfd8dc, 6%);
+    }
+
+    .bigStar{
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 15rpx;
+    
+      .star {
+        width:125rpx;
+        height:125rpx;
+        font-size: 75rpx !important;
+      }
+    }
+  }
+
+  .control {
+    flex:none;
+    padding: 40rpx 20rpx;
+    margin-top:15rpx;
+
+    .rateBtn {
+      width:100%;
+    }
+  }
+
+  
+}
+</style>

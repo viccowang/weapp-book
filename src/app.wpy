@@ -28,7 +28,9 @@ export default class extends wepy.app {
       'pages/index',
       'pages/list',
       'pages/bookInfo',
-      'pages/success'
+      'pages/turnback',
+      'pages/success',
+      'pages/rateBook'
     ],
     tabBar: {
       color: '#90a4ae',

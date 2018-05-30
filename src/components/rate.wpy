@@ -1,7 +1,7 @@
 <template>
     <view class="rate">
         <repeat for="{{rateRange}}" key="index" item="item">
-            <view class="star iconfont {{item.full ? 'icon-star-full' : 'icon-star-empty'}}"></view>
+            <view class="star iconfont {{item.full ? 'icon-star-full' : 'icon-star-empty'}}" @tap="rateStar({{item}})"></view>
         </repeat>
     </view>
 </template>
@@ -14,16 +14,41 @@ export default class RateComponent extends wepy.component {
   }
 
   props = {
-    book: {
-      type: Object
+    rate: {
+      type: String,
+      twoWay: true
+    },
+    editable: {
+      type: Boolean,
+      default: false
+    }
+  }
+
+  watch = {
+    rate (newVal) {
+      if (newVal) this.initRate(newVal)
     }
   }
 
   onLoad () {
-    if (this.book) {
-      const rate = Math.round(this.book.rate)
-      for (let i = 0; i < 5; i++) {
-        this.rateRange.push({ star: i, full: (i < rate) })
+    console.log(this.editable)
+  }
+
+  initRate (rateValue) {
+    const rate = Math.round(rateValue)
+    this.rateRange = []
+    for (let i = 0; i < 5; i++) {
+      this.rateRange.push({ star: i, full: (i < rate) })
+    }
+    this.$apply()
+  }
+
+  methods = {
+    rateStar (item) {
+      if (this.editable) {
+        const rate = item.star + 1
+        this.initRate(rate)
+        this.rate = rate
       }
     }
   }
@@ -36,6 +61,9 @@ export default class RateComponent extends wepy.component {
     width: 250rpx;
 
     .star {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width:65rpx;
         height:65rpx;
         margin:0 5rpx;
