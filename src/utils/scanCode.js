@@ -27,8 +27,8 @@ function showError(msg) {
 function scanCodeToShowBookInfo (navType) {
   scanCode().then(res => {
     if (res) {
-      const bookCode = res.result
-      if (reg.test(bookCode)) {
+      const bookCode = reg.test(res.result)
+      if (bookCode) {
         wepy[navType]({
           url: `./bookInfo?bookId=${res.result}&readOnly=false`
         })
@@ -46,8 +46,8 @@ function scanCodeToShowBookInfo (navType) {
 function scanCodeToReturnBook (navType) {
   scanCode().then(res => {
     if (res) {
-      const bookCode = res.result
-      if (reg.test(bookCode)) {
+      const bookCode = reg.test(res.result)
+      if (bookCode) {
         // TODO: 这里之前需要做书验证,是否在库里被借阅等等
         wepy.showModal({
           title: '还书提醒',

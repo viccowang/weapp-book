@@ -67,19 +67,19 @@ export default class extends wepy.app {
         wepy.login({
           success (res) {
             // console.log('session 过期,重新登陆成功!', res)
-            wepy.request({
-              url: 'http://1.81.102.223:9651/sys/user/login',
-              // method: 'POST',
-              data: {
-                code: res.code
-              },
-              success (res) {
-                console.log(res)
-              },
-              fail (error) {
-                console.log(error)
-              }
-            })
+            // wepy.request({
+            //   url: 'http://1.81.102.223:9651/sys/user/login',
+            //   // method: 'POST',
+            //   data: {
+            //     code: res.code
+            //   },
+            //   success (res) {
+            //     console.log(res)
+            //   },
+            //   fail (error) {
+            //     console.log(error)
+            //   }
+            // })
           }
         })
       }

@@ -1,0 +1,73 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add global wepy-cli
+
+PATH: 
+  C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\Vicco\bin;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Git\cmd;C:\Program Files\Java\jdk1.8.0_144\bin;C:\Program Files\Java\jdk1.8.0_144\jre\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\Program Files\nodejs;C:\Program Files (x86)\Yarn\bin;C:\WINDOWS\System32\OpenSSH;C:\Users\Vicco\AppData\Local\Programs\Python\Python35\Scripts;C:\Users\Vicco\AppData\Local\Programs\Python\Python35;C:\Users\Vicco\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft VS Code\bin;C:\Users\Vicco\AppData\Local\atom\bin;C:\Users\Vicco\AppData\Local\Microsoft\WindowsApps;C:\Users\Vicco\AppData\Roaming\npm;C:\Users\Vicco\AppData\Local\Yarn\bin
+
+Yarn version: 
+  1.5.1
+
+Node version: 
+  8.9.4
+
+Platform: 
+  win32 x64
+
+npm manifest: 
+  {
+    "name": "wxapp-book",
+    "version": "0.0.2",
+    "description": "A WePY project",
+    "main": "dist/app.js",
+    "scripts": {
+      "dev": "wepy build --watch",
+      "build": "cross-env NODE_ENV=production wepy build --no-cache",
+      "dev:web": "wepy build --output web",
+      "start": "npm run dev",
+      "clean": "find ./dist -maxdepth 1 -not -name 'project.config.json' -not -name 'dist' | xargs rm -rf",
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "wepy": {
+      "module-a": false,
+      "./src/components/list": "./src/components/wepy-list.wpy"
+    },
+    "author": "Vicco Wang <viccowang@gmail.com>",
+    "license": "MIT",
+    "dependencies": {
+      "redux": "^3.7.2",
+      "redux-actions": "^2.2.1",
+      "redux-promise": "^0.5.3",
+      "wepy-redux": "^1.5.3",
+      "wepy": "^1.6.0",
+      "wepy-async-function": "^1.4.4",
+      "wepy-com-toast": "^1.0.2"
+    },
+    "devDependencies": {
+      "babel-eslint": "^7.2.1",
+      "babel-plugin-transform-class-properties": "^6.24.1",
+      "babel-plugin-transform-decorators-legacy": "^1.3.4",
+      "babel-plugin-transform-export-extensions": "^6.22.0",
+      "babel-plugin-transform-object-rest-spread": "^6.26.0",
+      "babel-preset-env": "^1.6.1",
+      "cross-env": "^5.1.3",
+      "eslint": "^3.18.0",
+      "eslint-config-standard": "^7.1.0",
+      "eslint-friendly-formatter": "^2.0.7",
+      "eslint-plugin-html": "^2.0.1",
+      "eslint-plugin-promise": "^3.5.0",
+      "eslint-plugin-standard": "^2.0.1",
+      "wepy-compiler-babel": "^1.5.1",
+      "wepy-compiler-less": "^1.3.10",
+      "wepy-compiler-sass": "^1.3.12",
+      "wepy-eslint": "^1.5.3"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  Error: EBUSY: resource busy or locked, copyfile 'C:\Users\Vicco\AppData\Local\Yarn\Cache\v1\npm-less-2.7.3-cc1260f51c900a9ec0d91fb6998139e02507b63b\test\css\urls.css' -> 'E:\Project\weapp-book\node_modules\less\test\css\urls.css'
