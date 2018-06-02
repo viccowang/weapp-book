@@ -1,8 +1,8 @@
 <template>
     <scroll-view scroll-y="{{true}}" class="container">
-        <view class="header" style="background:url({{bookInfo.images.large}}) 100% 100% no-repeat;filter:blur(15rpx)" />
+        <view class="header" style="background:url({{bookInfo.imagesLarge}}) 100% 100% no-repeat;filter:blur(15rpx)" />
         <view class="header-bookImg">
-            <image class="image" mode="" src="{{bookInfo.images.medium}}" />
+            <image class="image" mode="" src="{{bookInfo.tagImage}}" />
         </view>
         <view class="bookInfo">
             <view class="block bookDesc" id="bookInfo" >
@@ -27,6 +27,8 @@
 import wepy from 'wepy'
 // components
 import RateComponent from '@/components/rate'
+// api
+import { borrowBook, bookDetail } from '@/api/book'
 
 export default class BookInfo extends wepy.page {
   components = {
@@ -56,17 +58,13 @@ export default class BookInfo extends wepy.page {
 
   initBookPage (bookInfo) {
     this.bookInfo = Object.assign({}, this.bookInfo, bookInfo)
-    this.bookInfo.author = bookInfo.author.length ? bookInfo.author.join(', ') : '暂无'
-    this.bookInfo.translator = bookInfo.translator.length ? bookInfo.translator.join(', ') : ''
-    this.bookRate = '3.9'
+    this.bookRate = bookInfo.grade
   }
 
  // 这里应该首先请求后端服务获取图书信息,
  // 如果有则弹出详情
-  onLoad (queryData) {
-    const self = this
+  async onLoad (queryData) {
     const { bookId, readOnly } = queryData
-    // console.log(queryData)
     if (bookId) {
       //
       this.isReadOnly = readOnly
@@ -75,33 +73,28 @@ export default class BookInfo extends wepy.page {
         title: '正在读取图书信息'
       })
       this.bookId = bookId
-      wepy.request({
-        url: `http://39.107.77.177/v2/book/isbn/${bookId}`,
-        header: {
-          'content-type': 'json' // 默认值
-        },
-        success (res) {
-          self.initBookPage(res.data)
-          self.$apply()
+
+      const bookData = await bookDetail({bookIsbn: bookId})
+      if (bookData) {
+        this.initBookPage(bookData)
+        this.$apply()
           //
-          self.getBookCurrentPos()
+        this.getBookCurrentPos()
           //
-          wepy.hideLoading()
-        },
-        fail () {
-          wepy.hideLoading()
-          wepy.showModal({
-            title: '有点问题',
-            content: '获取服务器书籍信息失败, 请在群中联系[钱大仙]同学处理.',
-            showCancel: false,
-            success (res) {
-              wepy.redirectTo({
-                url: './index'
-              })
-            }
-          })
-        }
-      })
+        wepy.hideLoading()
+      } else {
+        wepy.hideLoading()
+        wepy.showModal({
+          title: '有点问题',
+          content: '获取服务器书籍信息失败, 请在群中联系[钱大仙]同学处理.',
+          showCancel: false,
+          success (res) {
+            wepy.redirectTo({
+              url: './index'
+            })
+          }
+        })
+      }
     }
   }
 
@@ -134,12 +127,14 @@ export default class BookInfo extends wepy.page {
               title: '管理员拿书去啦,稍等...'
             })
 
-            setTimeout(() => {
-              wepy.hideLoading()
-              wepy.redirectTo({
-                url: './success'
+            borrowBook({bookIsbn: this.bookId}).then(res => {
+              setTimeout(() => {
+                wepy.hideLoading()
+                wepy.redirectTo({
+                  url: './success'
+                })
               })
-            }, 1000)
+            }, 1500)
           }
         }
       })
@@ -163,15 +158,7 @@ export default class BookInfo extends wepy.page {
         width:100%;
         height: 400rpx;
         background-color: #cfd8dc;
-
-        .header-mask {
-          position:absolute;
-          top:0;left:0;
-          width:100%;
-          height:400rpx;
-          opacity:.2;
-          overflow:hidden;
-        }
+        transform: scale(1.2);
     }
 
     .header-bookImg {

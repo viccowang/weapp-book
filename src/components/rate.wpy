@@ -31,7 +31,7 @@ export default class RateComponent extends wepy.component {
   }
 
   onLoad () {
-    console.log(this.editable)
+    // console.log(this.editable)
   }
 
   initRate (rateValue) {

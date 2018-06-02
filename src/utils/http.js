@@ -1,6 +1,7 @@
 import wepy from 'wepy'
+import { getUserToken } from './storage'
 
-const remoteServer = 'http://192.168.10.241:3000'
+const remoteServer = 'http://192.168.10.241:3000/mock/205'
 
 function handlerStatus (res) {
   if (res.statusCode === 200) {
@@ -30,11 +31,13 @@ function handlerResponse (res) {
 
 function request ({ url, method, data }) {
   return new Promise((resolve, reject) => {
+    const userToken = getUserToken()
     wepy.request({
       url: remoteServer + url,
       method,
       data,
       header: {
+        'Authorization': userToken || '',
         'Content-Type': 'application/json'
       },
       success (res) {

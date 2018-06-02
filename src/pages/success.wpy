@@ -13,13 +13,13 @@
 </template>
 <script>
 import wepy from 'wepy'
-import { scanCodeToShowBookInfo } from '@/utils/scanCode'
+import { scanCodeToBorrowBook } from '@/utils/scanCode'
 
 export default class BorrowSuccess extends wepy.page {
   methods = {
       //
     scanCode () {
-      scanCodeToShowBookInfo('redirectTo')
+      scanCodeToBorrowBook('redirectTo')
     },
     //
     toMyBag () {

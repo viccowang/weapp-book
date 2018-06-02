@@ -19,6 +19,10 @@ import 'wepy-async-function'
 import { setStore } from 'wepy-redux'
 import configStore from './store'
 
+// api
+import { userLogin } from '@/api/login'
+import { USER_STORAGE_TOKEN_PERFIX } from '@/utils/storage'
+
 const store = configStore()
 setStore(store)
 
@@ -56,32 +60,62 @@ export default class extends wepy.app {
     this.use('requestfix')
   }
 
+  userLogin() {
+    wepy.login({
+      success (res) {
+        userLogin({code: res.code}).then(res => {
+          if (res && res.token) {
+            wepy.setStorage({
+              key: USER_STORAGE_TOKEN_PERFIX,
+              data: res.token
+            })
+          } else {
+            wepy.showModal({
+              title: '提醒',
+              content: '登录获取用户Token失败,请联系钱大仙确认服务器无问题.',
+              confirmText: '重新获取'
+            })
+          }
+        })
+      },
+      fail () {
+        wepy.showModal({
+          title: '提醒',
+          content: '微信登录服务调用失败,请确认网络连接后稍后再尝试.',
+          showCancel: false
+        })
+      }
+    })
+  }
+
+  /**
+   * 首次登录需要先检查是否有session
+   */
   onLaunch() {
     wepy.checkSession({
         // 未过期
-      success () {
-        // console.log('session 未过期')
-      },
-        // 过期
-      fail () {
-        wepy.login({
-          success (res) {
-            // console.log('session 过期,重新登陆成功!', res)
-            // wepy.request({
-            //   url: 'http://1.81.102.223:9651/sys/user/login',
-            //   // method: 'POST',
-            //   data: {
-            //     code: res.code
-            //   },
-            //   success (res) {
-            //     console.log(res)
-            //   },
-            //   fail (error) {
-            //     console.log(error)
-            //   }
-            // })
+      success (res) {
+        // 从本地获取用户TOKEN,如果失败则重新登录
+        wepy.getStorage({
+          key: USER_STORAGE_TOKEN_PERFIX,
+          fail () {
+            wepy.showModal({
+              title: '提醒',
+              content: '未获取到用户Token,需要重新登录获取.',
+              confirmText: '重新获取',
+              showCancel: false,
+              success (res) {
+                if (res.confirm) {
+                  this.userLogin()
+                }
+              }
+            })
           }
         })
+      },
+      // 过期则需要重新登录
+      fail () {
+        this.userLogin()
       }
     })
   }

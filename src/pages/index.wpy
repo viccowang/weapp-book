@@ -16,7 +16,7 @@
 import wepy from 'wepy'
 import { connect } from 'wepy-redux'
 import { authUserInfo } from '@/utils/authUserInfo'
-import { scanCodeToShowBookInfo, scanCodeToReturnBook } from '@/utils/scanCode'
+import { scanCodeToBorrowBook, scanCodeToReturnBook } from '@/utils/scanCode'
 
 @connect({
   isAuthorized: state => state.user.isAuthorized
@@ -24,9 +24,6 @@ import { scanCodeToShowBookInfo, scanCodeToReturnBook } from '@/utils/scanCode'
 export default class IndexPage extends wepy.page {
   config = {
     disableScroll: true
-  }
-
-  data = {
   }
 
   onLoad () {
@@ -46,7 +43,7 @@ export default class IndexPage extends wepy.page {
         })
       } else {
         if (type === 'borrow') {
-          scanCodeToShowBookInfo('navigateTo')
+          scanCodeToBorrowBook('navigateTo')
         } else if (type === 'return') {
           scanCodeToReturnBook('navigateTo')
         } else {}
