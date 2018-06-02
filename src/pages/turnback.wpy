@@ -16,6 +16,18 @@ import wepy from 'wepy'
 import { scanCodeToReturnBook } from '@/utils/scanCode'
 
 export default class TurnBackBook extends wepy.page {
+  config = {
+    disableScroll: true
+  }
+
+  data = {
+    bookId: null
+  }
+
+  onLoad (queryData) {
+    this.bookId = queryData.bookId
+  }
+
   methods = {
     //
     scanCode () {
@@ -28,7 +40,7 @@ export default class TurnBackBook extends wepy.page {
     //
     rateBook () {
       wepy.navigateTo({
-        url: './rateBook'
+        url: `./rateBook?bookId=${this.bookId}`
       })
     }
   }
@@ -38,9 +50,6 @@ export default class TurnBackBook extends wepy.page {
 .page {
     width:100%;
     height:100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 
     .success {
         display: flex;
@@ -56,14 +65,9 @@ export default class TurnBackBook extends wepy.page {
     }
 
     .control {
-        width:100%;       
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+        padding:0 45rpx;
 
         .ctrlBtn {
-            width:90%;
             margin:15rpx 0;
         }
     }

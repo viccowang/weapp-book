@@ -48,7 +48,7 @@ export default class extends wepy.app {
       // navigationStyle: 'custom',
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: 'SENDO书架',
+      navigationBarTitleText: '书架',
       navigationBarTextStyle: 'black'
     }
   }
@@ -73,7 +73,7 @@ export default class extends wepy.app {
             wepy.showModal({
               title: '提醒',
               content: '登录获取用户Token失败,请联系钱大仙确认服务器无问题.',
-              confirmText: '重新获取'
+              showCancel: false
             })
           }
         })

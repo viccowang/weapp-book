@@ -43,3 +43,14 @@ export function bookDetail (isbn) {
     data: isbn
   })
 }
+
+/**
+ * book rate
+ * @param {Object} isbn
+ */
+export function rateBook (params) {
+  return post({
+    url: '/api/sysBooks/addGrade',
+    data: params
+  })
+}

@@ -5,8 +5,8 @@
             <view class="success-con">借阅成功! 记得归还哦~</view>
         </view>
         <view class="control">
-            <button class="ctrlBtn weui-btn" type="default" @tap="scanCode">再借一本</button>
-            <button class="ctrlBtn weui-btn" type="primary" @tap="toMyBag">我的书架</button>
+            <button class="weui-btn" type="default" @tap="scanCode">再借一本</button>
+            <button class="weui-btn" type="primary" @tap="toMyBag">我的书架</button>
             </view>
         </view>
     </view>
@@ -16,6 +16,10 @@ import wepy from 'wepy'
 import { scanCodeToBorrowBook } from '@/utils/scanCode'
 
 export default class BorrowSuccess extends wepy.page {
+  config = {
+    disableScroll: true
+  }
+
   methods = {
       //
     scanCode () {
@@ -34,9 +38,6 @@ export default class BorrowSuccess extends wepy.page {
 .page {
     width:100%;
     height:100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 
     .success {
         display: flex;
@@ -52,14 +53,9 @@ export default class BorrowSuccess extends wepy.page {
     }
 
     .control {
-        width:100%;       
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+        padding:0 45rpx;
 
         .ctrlBtn {
-            width:90%;
             margin:15rpx 0;
         }
     }

@@ -11,6 +11,10 @@ export function authUserInfo () {
         type: SET_USERINFO,
         payload: res.userInfo
       })
+      // wepy.showToast({
+      //   title: '授权成功 ',
+      //   icon: 'success'
+      // })
     },
     fail () {
       store.dispatch({

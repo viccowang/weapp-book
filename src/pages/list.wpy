@@ -15,8 +15,8 @@
                   <view class="list-cell-content">
                       <view class="list-cell-line title">书名: {{book.title}}</view>
                       <view class="list-cell-line authro">作者: {{book.author}}</view>
-                      <view class="list-cell-line summary">简介: 啊是的俩是大发牢骚款到即发老师的课件发了深刻的减肥啦数控刀具flask地方</view>
-                      <view class="list-cell-line date">借阅时间: {{book.borrowDate}}</view>
+                      <view class="list-cell-line summary">简介: {{book.summary}}</view>
+                      <view class="list-cell-line date">借阅时间: {{book.borrowTime}}</view>
                   </view>
                 </view>
               </repeat>  
@@ -127,7 +127,6 @@ export default class MyBookList extends wepy.page {
     height:220rpx;
     position:relative;
     background: #b0bec5;
-    border-bottom: 1px solid #cfd8dc;
 
     .avatar{
       position:absolute;
