@@ -1,0 +1,240 @@
+<template>
+    <scroll-view scroll-y="{{true}}" class="container">
+        <view class="header" style="background:url({{bookInfo.images.large}}) 100% 100% no-repeat;filter:blur(15rpx)" />
+        <view class="header-bookImg">
+            <image class="image" mode="" src="{{bookInfo.image}}" />
+        </view>
+        <view class="bookInfo">
+            <view class="block bookDesc" id="bookInfo" >
+                <text class="line title">书名: {{bookInfo.title}}</text>
+                <text class="line subTitle" wx:if="{{bookInfo.subtitle !== ''}}">副书名:</text>
+                <text class="line author">作者: {{bookInfo.author}}</text>
+                <text class="line translator" wx:if="{{bookInfo.translator !== ''}}">翻译: {{bookInfo.translator}}</text>
+            </view>
+            <picker class="block picker" range="{{booksCount}}" @change="selectBookCount">
+                <view class="picker-view">
+                    <text class="text">选择要加入的数量</text>
+                    <text class="count">{{selectedCount}}本</text>
+                </view>
+            </picker>
+            <view class="block submit">
+                <button class="weui-btn" type="primary" @tap="confirmToBorrow">加入书库</button>
+            </view>
+            <view class="blank" />
+        </view>
+    </scroll-view>
+</template>
+<script>
+import wepy from 'wepy'
+
+// api
+import { entryBook } from '@/api/admin'
+import { getBookInfoFromDouBan } from '@/utils/scanCode'
+
+export default class EntryBookInfo extends wepy.page {
+  data = {
+    bookId: null,
+    bookData: null,
+    selectedCount: 1,
+    booksCount: [],
+    bookDescHeight: 'auto',
+    backColor: '',
+    bookInfo: {
+      title: '',
+      subtitle: '',
+      tags: [],
+      images: {
+        small: '',
+        large: ''
+      },
+      author_intro: '',
+      summary: ''
+
+    }
+  }
+
+  initBookPage (bookInfo) {
+    this.bookData = bookInfo
+    this.bookInfo = Object.assign({}, this.bookInfo, bookInfo)
+    this.bookInfo.author = bookInfo.author.join(', ')
+    this.bookInfo.translator = bookInfo.translator.join(', ')
+    for (let i = 1; i < 21; i++) {
+      this.booksCount.push(i)
+    }
+  }
+
+ // 这里应该首先请求后端服务获取图书信息,
+ // 如果有则弹出详情
+  async onLoad (queryData) {
+    const { bookId, isAdmin } = queryData
+    if (bookId) {
+      //
+      this.isAdmin = isAdmin
+      //
+      this.bookId = bookId
+      //
+      wepy.showLoading({
+        title: '正在读取图书信息'
+      })
+
+      const bookData = await getBookInfoFromDouBan(bookId)
+      if (bookData) {
+        this.initBookPage(bookData)
+        this.$apply()
+          //
+        wepy.hideLoading()
+      } else {
+        wepy.hideLoading()
+        wepy.showModal({
+          title: '有点问题',
+          content: '获取服务器书籍信息失败, 请在群中联系[钱大仙]同学处理.',
+          showCancel: false,
+          success (res) {
+            wepy.redirectTo({
+              url: './index'
+            })
+          }
+        })
+      }
+    }
+  }
+
+  //
+  methods = {
+    // 借阅
+    confirmToBorrow () {
+      const self = this
+      wepy.showModal({
+        title: '提醒',
+        content: `确定要加入${this.selectedCount}本<<${this.bookInfo.title}>>吗?`,
+        success (res) {
+          if (res.confirm) {
+            entryBook({data: self.bookData, addNumber: (self.selectedCount).toFixed()}).then(res => {
+              wepy.showToast({
+                title: '添加成功!2秒后返回.',
+                icon: 'success',
+                success () {
+                  setTimeout(() => {
+                    wepy.navigateBack()
+                  }, 2000)
+                }
+              })
+            })
+          }
+        }
+      })
+    },
+    selectBookCount (e) {
+      this.selectedCount = parseInt(e.detail.value) + 1
+    }
+  }
+}
+</script>
+<style lang="less">
+.container {
+    width:100%;
+    height:100vh;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+
+    .header {
+        width:100%;
+        height: 400rpx;
+        background-color: #cfd8dc;
+        transform: scale(1.2);
+    }
+
+    .header-bookImg {
+        position: absolute;
+        top:30px; left: 50%;
+        margin-left: -130rpx;
+        width:262rpx;
+        height:390rpx;
+        overflow:hidden;
+        box-shadow:0 5rpx 15rpx rgba(0,0,0,.25);
+
+        .image {
+            width: 255rpx;
+            height:380rpx;
+            border: 2px solid #eceff1;
+        }
+    }
+
+    .bookInfo {
+        width:100%;
+        flex:1;
+        padding-top:90rpx;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        font-size:30rpx;
+
+        .block {
+            width:90%;
+            padding:15rpx;
+            border: 1rpx solid #cfd8dc;
+            border-radius: 8rpx;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+
+            &.bookDesc {
+
+                .desc {
+                    font-size:28rpx;
+                    overflow: hidden;
+                }
+
+                .handle-more {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding-top:10rpx;
+                    border-top: 1rpx solid #cfd8dc;
+                }
+
+            }
+
+            &.picker {
+                margin:25rpx 0 15rpx 0;
+                
+                .picker-view {
+                    display: flex;
+                    justify-content: space-between;
+
+                    .count {
+                        font-weight:600;
+                        margin-right:15rpx;
+                    }
+                }
+            }
+
+            .line {
+                flex:1;
+                width: 100%;
+                padding: 20rpx 0;
+                border-bottom: 1px dotted #cfd8dc;
+
+                &:last-child {
+                    border-bottom: none;
+                }
+            }
+        }
+
+        .submit {
+          border:none;
+          padding:0;
+          margin:15rpx 0;
+          display: block;
+        }
+    }
+
+    .blank {
+      width:100%;
+      height:25rpx;
+    }
+    
+    
+}
+</style>

@@ -1,0 +1,54 @@
+<template>
+    <view class="admin-page">
+        <view class="admin-title">
+            <text class="head">Administrator Management</text>
+            <text class="summary">管理员可以在该页面为图书库快速添加图书.</text>
+        </view>
+        <view class="admin-content">
+            <button type="primary" @tap="scanCodeToAddBook">扫码加书</button>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy'
+// api
+import { scanCodeToEntryBook } from '@/utils/scanCode'
+
+export default class EntryBook extends wepy.page {
+  config = {
+    disableScroll: true
+  }
+
+  data = { }
+
+  methods = {
+    scanCodeToAddBook () {
+      scanCodeToEntryBook()
+    }
+  }
+}
+</script>
+<style lang="less">
+.admin-page {
+    height:100vh;
+    background-color: #eceff1;
+
+    .admin-title{
+        padding:140rpx 50rpx;
+        display: flex;
+        flex-direction: column;
+
+        .head {
+            padding:25rpx 0;
+        }
+        .summary {
+            font-size:28rpx;
+            color: lighten(#222, 15%);
+        }
+    }
+
+    .admin-content {
+        padding: 0 45rpx;
+    }
+}
+</style>

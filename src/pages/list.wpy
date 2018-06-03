@@ -96,7 +96,7 @@ export default class MyBookList extends wepy.page {
     },
     showBookDetail (book) {
       wepy.navigateTo({
-        url: `./bookInfo?bookId=${book.bookId}&readOnly=true`
+        url: `./bookInfo?bookId=${book.isbn13}&readOnly=true`
       })
     }
   }

@@ -25,6 +25,33 @@ function scanCode () {
 }
 
 /**
+ * 从豆瓣获取书籍数据
+ *
+ * @param {any} isbn
+ * @returns
+ */
+function getBookInfoFromDouBan (isbn) {
+  return new Promise((resolve, reject) => {
+    wepy.request({
+      url: `http://39.107.77.177/v2/book/isbn/${isbn}`,
+      header: {
+        'Content-Type': 'json'
+      },
+      success (res) {
+        if (res.statusCode === 200) {
+          resolve(res.data)
+        } else {
+          reject(res)
+        }
+      },
+      fail (error) {
+        reject(error)
+      }
+    })
+  })
+}
+
+/**
  * 统一错误处理弹出框
  *
  * @param {any} msg
@@ -124,8 +151,33 @@ function showBookInfo (isbn) {
   }
 }
 
+// 录入图书
+async function scanCodeToEntryBook () {
+  const res = await scanCode()
+  if (res) {
+    const isbn = res.result
+    const bookCode = reg.test(isbn)
+    // ISBN码验证
+    if (bookCode) {
+      // TODO: 换域名
+      // const bookInfoFromDouBan = await getBookInfoFromDouBan(isbn)
+      // if (bookInfoFromDouBan) {
+        // const result = await entryBook({data: bookInfoFromDouBan})
+      wepy.navigateTo({
+        url: `./entryInfo?bookId=${isbn}&isAdmin=true`
+      })
+      // }
+      // const result = await entryBook({b})
+    }
+  } else {
+    showError('没有扫到书籍条形码')
+  }
+}
+
 export {
   scanCodeToBorrowBook,
   showBookInfo,
-  scanCodeToReturnBook
+  scanCodeToReturnBook,
+  getBookInfoFromDouBan,
+  scanCodeToEntryBook
 }

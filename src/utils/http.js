@@ -1,7 +1,8 @@
 import wepy from 'wepy'
 import { getUserToken } from './storage'
 
-const remoteServer = 'http://192.168.10.241:3000/mock/205'
+// const remoteServer = 'http://192.168.10.241:3000/mock/205'
+const remoteServer = 'http://192.168.10.166:9651'
 
 function handlerStatus (res) {
   if (res.statusCode === 200) {
@@ -21,7 +22,7 @@ function handlerResponse (res) {
     return res.data
   } else {
     wepy.showToast({
-      title: '返回数据有误!',
+      title: res.head.msg,
       icon: 'none',
       duration: 2000
     })

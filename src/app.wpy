@@ -21,7 +21,8 @@ import configStore from './store'
 
 // api
 import { userLogin } from '@/api/login'
-import { USER_STORAGE_TOKEN_PERFIX } from '@/utils/storage'
+import { USER_STORAGE_TOKEN_PERFIX, IS_ADMIN } from '@/utils/storage'
+import { SET_ADMIN } from '@/store/types'
 
 const store = configStore()
 setStore(store)
@@ -34,7 +35,9 @@ export default class extends wepy.app {
       'pages/bookInfo',
       'pages/turnback',
       'pages/success',
-      'pages/rateBook'
+      'pages/rateBook',
+      'pages/admin/entryBook',
+      'pages/admin/entryInfo'
     ],
     tabBar: {
       color: '#90a4ae',
@@ -67,14 +70,14 @@ export default class extends wepy.app {
           if (res && res.token) {
             wepy.setStorage({
               key: USER_STORAGE_TOKEN_PERFIX,
-              data: res.token,
-              success () {
-                wepy.showToast({
-                  title: '登录成功!',
-                  icon: 'success'
-                })
-              }
+              data: res.token
             })
+            // set Administrator
+            wepy.setStorage({
+              key: IS_ADMIN,
+              data: res.isAdmin === '1'
+            })
+            store.dispatch({ type: SET_ADMIN, payload: res.isAdmin === '1' })
           } else {
             wepy.showModal({
               title: '提醒',

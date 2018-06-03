@@ -1,5 +1,6 @@
 <template>
     <view class="container">
+        <button wx:if="{{isAuthorized && isAdmin}}" class="entry-book iconfont icon-book" @tap="entryBooks"></button>
         <button wx:if="{{!isAuthorized}}" class="user-info iconfont icon-wodedianji" open-type="getUserInfo" @tap="getUserInfo"></button>
         <image class="avatar" wx:if="{{isAuthorized}}" src="{{userInfo.avatarUrl}}" />
         <view class="area borrow-book" hover-class="borrow-book-hover" @tap="scanCode('borrow')">
@@ -18,6 +19,7 @@ import wepy from 'wepy'
 import { connect } from 'wepy-redux'
 import { authUserInfo } from '@/utils/authUserInfo'
 import { scanCodeToBorrowBook, scanCodeToReturnBook } from '@/utils/scanCode'
+import { getUserIsAdmin } from '@/utils/storage'
 
 @connect({
   isAuthorized: state => state.user.isAuthorized,
@@ -28,8 +30,13 @@ export default class IndexPage extends wepy.page {
     disableScroll: true
   }
 
+  data = {
+    isAdmin: false
+  }
+
   onLoad () {
     authUserInfo()
+    this.isAdmin = getUserIsAdmin()
   }
 
   methods = {
@@ -49,6 +56,11 @@ export default class IndexPage extends wepy.page {
           scanCodeToReturnBook('navigateTo')
         } else {}
       }
+    },
+    entryBooks () {
+      wepy.navigateTo({
+        url: './admin/entryBook'
+      })
     }
   }
 }
@@ -62,13 +74,13 @@ export default class IndexPage extends wepy.page {
     align-items: center;
     background-color: #eceff1;
 
-    .user-info {
+    .user-info,
+    .entry-book {
       position:absolute;
       display: flex;
       justify-content: center;
       align-items: center;
-      right:60rpx;
-      top:40rpx;
+      top:37rpx;
       font-size:45rpx;
       color: #455a64;
       padding: 0;
@@ -76,6 +88,15 @@ export default class IndexPage extends wepy.page {
       height:75rpx;
       border:none;
       background:none;
+    }
+
+    .user-info {
+      right:60rpx;
+    }
+
+    .entry-book {
+      top:40rpx;
+      left:60rpx;
     }
 
     .avatar {
