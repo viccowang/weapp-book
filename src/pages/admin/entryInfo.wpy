@@ -1,6 +1,6 @@
 <template>
     <scroll-view scroll-y="{{true}}" class="container">
-        <view class="header" style="background:url({{bookInfo.images.large}}) 100% 100% no-repeat;filter:blur(15rpx)" />
+        <view class="header" style="background:url({{bookInfo.images.large}}) center center no-repeat;filter:blur(15rpx)" />
         <view class="header-bookImg">
             <image class="image" mode="" src="{{bookInfo.image}}" />
         </view>
@@ -140,7 +140,7 @@ export default class EntryBookInfo extends wepy.page {
         width:100%;
         height: 400rpx;
         background-color: #cfd8dc;
-        transform: scale(1.2);
+        transform: scale(1.05);
     }
 
     .header-bookImg {

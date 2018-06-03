@@ -33,10 +33,9 @@ function scanCode () {
  */
 async function getBookInfoFromDouBan (isbn) {
   const result = await request({
-    // TODO: 临时地址
-    url: `http://39.107.77.177/v2/book/isbn/${isbn}`,
-    header: { 'Content-Type': 'json' },
-    absolute: true
+    url: `/v2/book/isbn/${isbn}`,
+    header: { 'Content-Type': 'json' }
+    // absolute: true
   })
   return result
 }

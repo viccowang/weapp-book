@@ -21,7 +21,7 @@ import configStore from './store'
 
 // api
 import { userLogin } from '@/api/login'
-import { USER_STORAGE_TOKEN_PERFIX, IS_ADMIN } from '@/utils/storage'
+import { USER_STORAGE_TOKEN_PERFIX, IS_USER_CONFIRM_INFO, IS_ADMIN } from '@/utils/storage'
 import { SET_ADMIN } from '@/store/types'
 
 const store = configStore()
@@ -38,7 +38,8 @@ export default class extends wepy.app {
       'pages/rateBook',
       'pages/admin/entryBook',
       'pages/admin/entryInfo',
-      'pages/other/devInfo'
+      'pages/other/devInfo',
+      'pages/newbie'
     ],
     tabBar: {
       color: '#90a4ae',
@@ -68,7 +69,9 @@ export default class extends wepy.app {
     wepy.login({
       success (res) {
         userLogin({code: res.code}).then(res => {
+          console.log(res)
           if (res && res.token) {
+            // set token
             wepy.setStorage({
               key: USER_STORAGE_TOKEN_PERFIX,
               data: res.token
@@ -79,6 +82,13 @@ export default class extends wepy.app {
               data: res.isAdmin === '1'
             })
             store.dispatch({ type: SET_ADMIN, payload: res.isAdmin === '1' })
+            // set user info
+            // console.log(wepy.getStorageSync(IS_USER_CONFIRM_INFO))
+            // if (!wepy.getStorageSync(IS_USER_CONFIRM_INFO)) {
+            //   wepy.redirectTo({
+            //     url: './newbie'
+            //   })
+            // }
           } else {
             wepy.showModal({
               title: '提醒',
