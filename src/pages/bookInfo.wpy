@@ -69,10 +69,11 @@ export default class BookInfo extends wepy.page {
       //
       this.isReadOnly = readOnly
       //
+      this.bookId = bookId
+      //
       wepy.showLoading({
         title: '正在读取图书信息'
       })
-      this.bookId = bookId
 
       const bookData = await bookDetail({bookIsbn: bookId})
       if (bookData) {
@@ -115,6 +116,7 @@ export default class BookInfo extends wepy.page {
   methods = {
     // 借阅
     confirmToBorrow () {
+      const self = this
       wepy.showModal({
         title: '提醒',
         content: `确定要借阅<<${this.bookInfo.title}>>吗?`,
@@ -127,7 +129,7 @@ export default class BookInfo extends wepy.page {
               title: '管理员拿书去啦,稍等...'
             })
 
-            borrowBook({bookIsbn: this.bookId}).then(res => {
+            borrowBook({bookIsbn: self.bookId}).then(res => {
               setTimeout(() => {
                 wepy.hideLoading()
                 wepy.redirectTo({
