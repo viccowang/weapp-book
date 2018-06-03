@@ -19,6 +19,9 @@
             <view class="block submit" wx:if="{{isReadOnly === 'false'}}">
                 <button class="weui-btn" type="primary" @tap="confirmToBorrow">借阅</button>
             </view>
+             <view class="block submit" wx:if="{{ isReadOnly === 'true' && isBorrowedByUser }}">
+                <button class="weui-btn" type="primary" @tap="confirmToReturn">归还</button>
+            </view>
             <view class="blank" />
         </view>
     </scroll-view>
@@ -28,7 +31,7 @@ import wepy from 'wepy'
 // components
 import RateComponent from '@/components/rate'
 // api
-import { borrowBook, bookDetail } from '@/api/book'
+import { getBookState, borrowBook, returnBook, bookDetail } from '@/api/book'
 
 export default class BookInfo extends wepy.page {
   components = {
@@ -39,6 +42,7 @@ export default class BookInfo extends wepy.page {
     bookId: null,
     isReadOnly: false,
     isShowBookDeskHandler: false,
+    isBorrowedByUser: false,
     bookDescHeight: 'auto',
     backColor: '',
     bookRate: '',
@@ -76,8 +80,13 @@ export default class BookInfo extends wepy.page {
       })
 
       const bookData = await bookDetail({bookIsbn: bookId})
+      const isBorrowedByUser = await getBookState({bookIsbn: bookId})
       if (bookData) {
+        // 初始化书籍显示数据
         this.initBookPage(bookData)
+        // 如果该书被当前用户借走, 页面将展示还书按钮
+        this.isBorrowedByUser = isBorrowedByUser && isBorrowedByUser.borrowType === '1'
+        //
         this.$apply()
           //
         this.getBookCurrentPos()
@@ -141,6 +150,32 @@ export default class BookInfo extends wepy.page {
         }
       })
     },
+    // 还书
+    confirmToReturn () {
+      const self = this
+      wepy.showModal({
+        title: '提醒',
+        content: `确定要归还<<${this.bookInfo.title}>>吗?`,
+        success (res) {
+          if (res.confirm) {
+            // 借阅
+            wepy.showLoading({
+              title: '还书中...'
+            })
+
+            returnBook({bookIsbn: self.bookId}).then(res => {
+              setTimeout(() => {
+                wepy.hideLoading()
+                wepy.redirectTo({
+                  url: `./turnback?bookId=${self.bookId}`
+                })
+              }, 500)
+            })
+          }
+        }
+      })
+    },
+    // 显示全部摘要
     displayFullBookInfo () {
       this.isShowBookDeskHandler = false
       this.bookDescHeight = 'auto'

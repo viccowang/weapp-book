@@ -86,13 +86,11 @@ export default class EntryBookInfo extends wepy.page {
       } else {
         wepy.hideLoading()
         wepy.showModal({
-          title: '有点问题',
-          content: '获取服务器书籍信息失败, 请在群中联系[钱大仙]同学处理.',
+          title: 'Ops!',
+          content: '书籍从豆瓣获取失败,可能该书并未在豆瓣书库中录入.',
           showCancel: false,
           success (res) {
-            wepy.redirectTo({
-              url: './index'
-            })
+            wepy.navigateBack()
           }
         })
       }

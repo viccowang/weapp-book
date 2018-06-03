@@ -18,8 +18,11 @@ function handlerStatus (res) {
 }
 
 function handlerResponse (res) {
+  if (!res) return null
   if (res.head && res.head.code === '200') {
     return res.data
+  } else if (!res.head && !res.data) {
+    return res
   } else {
     wepy.showToast({
       title: res.head.msg,
@@ -30,17 +33,19 @@ function handlerResponse (res) {
   }
 }
 
-function request ({ url, method, data }) {
+function request ({ url, method, data, header, absolute }) {
   return new Promise((resolve, reject) => {
     const userToken = getUserToken()
+    const params = Object.create(null)
+    params.url = absolute ? url : remoteServer + url
+    params.header = header || {
+      'Authorization': userToken || '',
+      'Content-Type': 'application/json'
+    }
+    if (method !== undefined) params.method = method
+    if (data !== undefined) params.data = data
     wepy.request({
-      url: remoteServer + url,
-      method,
-      data,
-      header: {
-        'Authorization': userToken || '',
-        'Content-Type': 'application/json'
-      },
+      ...params,
       success (res) {
         resolve(handlerResponse(handlerStatus(res)))
       },
@@ -52,7 +57,7 @@ function request ({ url, method, data }) {
 }
 
 function get ({ url, data }) {
-  return request({ url, method: 'GET', data: data || null })
+  return request({ url, method: 'GET', data: data })
 }
 
 function post ({url, data}) {
@@ -61,5 +66,6 @@ function post ({url, data}) {
 
 export {
   get,
-  post
+  post,
+  request
 }

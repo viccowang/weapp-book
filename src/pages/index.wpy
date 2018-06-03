@@ -10,7 +10,10 @@
             <text>还</text>
         </view>
         <view class="weui-footer">
-            <view class="weui-footer__text">Copyright &#32;&#169; 2018 Vicco.W &#38; Qian.D.X</view>
+            <view class="weui-footer__text">
+              <text>Copyright &#32;&#169; </text>
+              <text @tap="showDev">visit developers</text>
+            </view>
         </view>
     </view>
 </template>
@@ -60,6 +63,11 @@ export default class IndexPage extends wepy.page {
     entryBooks () {
       wepy.navigateTo({
         url: './admin/entryBook'
+      })
+    },
+    showDev () {
+      wepy.navigateTo({
+        url: './other/devInfo'
       })
     }
   }

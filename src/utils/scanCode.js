@@ -1,6 +1,7 @@
 import wepy from 'wepy'
 // api
 import { getBookState, returnBook, bookDetail } from '@/api/book'
+import { request } from '@/utils/http'
 
 const reg = /^9787[0-9]{9,13}$/
 
@@ -30,25 +31,14 @@ function scanCode () {
  * @param {any} isbn
  * @returns
  */
-function getBookInfoFromDouBan (isbn) {
-  return new Promise((resolve, reject) => {
-    wepy.request({
-      url: `http://39.107.77.177/v2/book/isbn/${isbn}`,
-      header: {
-        'Content-Type': 'json'
-      },
-      success (res) {
-        if (res.statusCode === 200) {
-          resolve(res.data)
-        } else {
-          reject(res)
-        }
-      },
-      fail (error) {
-        reject(error)
-      }
-    })
+async function getBookInfoFromDouBan (isbn) {
+  const result = await request({
+    // TODO: 临时地址
+    url: `http://39.107.77.177/v2/book/isbn/${isbn}`,
+    header: { 'Content-Type': 'json' },
+    absolute: true
   })
+  return result
 }
 
 /**

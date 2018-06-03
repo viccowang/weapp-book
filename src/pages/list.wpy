@@ -57,8 +57,12 @@ export default class MyBookList extends wepy.page {
     bookList: []
   }
 
-  onLoad () {
+  onLoad (queryData) {
     this.getBookList()
+  }
+
+  onShow() {
+    this.onPullDownRefresh()
   }
 
  // 下拉刷新列表

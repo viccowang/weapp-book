@@ -1,0 +1,70 @@
+<template>
+    <view class="thank-page">
+        <view class="thank-title">
+            <text>Thanks for everyone!</text>
+        </view>
+        <view class="peace-line"></view>
+        <view class="developer-list">
+            <view class="title">Developers</view>
+            <view class="devs">
+                <view class="developer">Vicco Wang</view>
+                <view class="developer">Qian Da Xian</view>
+                <view class="developer"></view>
+            </view>
+        </view>
+        <view class="developer-list">
+            <view class="title">Testers</view>
+            <view class="devs">
+                <view class="developer">Zhang Juan Jin</view>
+            </view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy'
+
+export default class DeveloperInfo extends wepy.page {
+  config = {
+    disableScroll: true
+  }
+}
+</script>
+<style lang="less">
+.thank-page {
+    height: 100vh;
+    background: #eceff1;
+
+    .thank-title{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 120rpx 55rpx;
+        font-size:45rpx;
+    }
+
+    .peace-line {
+        margin:0 55rpx;
+        border-bottom: 1px solid darken(#eceff1, 10%);
+    }
+
+    .developer-list {
+        padding: 55rpx;
+
+        .title {
+            font-size:28rpx;
+            color:#b0bec5;
+        }
+
+        .devs {
+            display: flex;
+            padding: 15rpx 0;
+            
+            .developer {
+                font-size:34rpx;
+                color:#34515e;
+                margin-right: 35rpx;
+            }
+        }
+    }
+}
+</style>
