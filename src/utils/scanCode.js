@@ -56,6 +56,50 @@ function showError(msg) {
   })
 }
 
+// 书籍是否可以出借
+// status     0:书籍未添加，1：书籍有库存，2：书籍无库存
+// borrowType 0:用户未借过该书 ， 1：用户借过该书
+async function bookCanbeBorrow (isbn) {
+  // 获取当前书是否在公司书库内
+  const result = await getBookState({bookIsbn: isbn})
+  if (result && result.status) {
+    const state = result.status
+      // 库里没有该书
+    if (state === '0') {
+      showError('公司并没有该书可供借阅')
+      return false
+    } else if (state === '2') {
+      showError('Ops!该书已经被借光了.')
+      return false
+    } else {
+      return true
+    }
+  } else {
+    showError('图书状态读取失败.')
+    return false
+  }
+}
+
+async function bookCanbeReturn (isbn) {
+  // 获取当前书是否在公司书库内
+  const result = await getBookState({bookIsbn: isbn})
+  console.log(result)
+  if (result) {
+    const state = result.status
+    const type = result.borrowType
+
+    if (state === '0') {
+      showError('公司并没有录入该书.')
+      return false
+    }
+    if (type === '0') {
+      showError('你好像还没借过这本书.')
+      return false
+    }
+    return true
+  }
+}
+
 // 借书
 async function scanCodeToBorrowBook (navType) {
   try {
@@ -66,24 +110,14 @@ async function scanCodeToBorrowBook (navType) {
       // ISBN码验证
       if (bookCode) {
         wepy.showLoading({title: '正在读取书籍内容...'})
-        // 获取当前书是否在公司书库内
-        const result = await getBookState({bookIsbn: isbn})
-        if (result && result.status) {
-          wepy.hideLoading()
-          const state = result.status
-            // 库里没有该书
-          if (state === '0') {
-            showError('公司并没有该书可供借阅')
-          } else if (state === '1') {
-              // 公司有书且可以提供借阅,则跳转到详情页
-            wepy[navType]({
-              url: `./bookInfo?bookId=${isbn}&readOnly=false`
-            })
-          } else if (state === '2') {
-            showError('Ops!该书已经被借光了.')
-          } else { }
-        } else {
-          showError('图书状态读取失败.')
+        // 书籍是否可以出借
+        const result = await bookCanbeBorrow(isbn)
+        wepy.hideLoading()
+        if (result) {
+            // 公司有书且可以提供借阅,则跳转到详情页
+          wepy[navType]({
+            url: `./bookInfo?bookId=${isbn}&readOnly=false`
+          })
         }
       } else {
         showError('没有扫到书籍条形码')
@@ -107,8 +141,8 @@ async function scanCodeToReturnBook (navType) {
       // 检查当前扫码的书是否是公司内的书
       if (bookCode) {
         // 获取当前书是否在公司书库内
-        const bookState = await getBookState(param)
-        if (bookState.status !== '0') {
+        const result = await bookCanbeReturn(isbn)
+        if (result) {
           // 获取图书信息
           const { title } = await bookDetail(param)
           wepy.showModal({
