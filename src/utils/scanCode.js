@@ -47,24 +47,22 @@ async function scanCodeToBorrowBook (navType) {
       wepy.showLoading({title: '正在读取书籍内容...'})
       // 获取当前书是否在公司书库内
       const result = await getBookState({bookIsbn: isbn})
-      try {
-        if (result && result.status) {
-          wepy.hideLoading()
-          const state = result.status
+      if (result && result.status) {
+        wepy.hideLoading()
+        const state = result.status
           // 库里没有该书
-          if (state === '0') {
-            showError('公司并没有该书可供借阅')
-          } else if (state === '1') {
+        if (state === '0') {
+          showError('公司并没有该书可供借阅')
+        } else if (state === '1') {
             // 公司有书且可以提供借阅,则跳转到详情页
-            wepy[navType]({
-              url: `./bookInfo?bookId=${isbn}&readOnly=false`
-            })
-          } else if (state === '2') {
-            showError('Ops!该书已经被借光了.')
-          } else { }
-        }
-      } catch (error) {
-        showError(error)
+          wepy[navType]({
+            url: `./bookInfo?bookId=${isbn}&readOnly=false`
+          })
+        } else if (state === '2') {
+          showError('Ops!该书已经被借光了.')
+        } else { }
+      } else {
+        showError('图书状态读取失败.')
       }
     } else {
       showError('没有扫到书籍条形码')

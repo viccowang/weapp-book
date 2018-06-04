@@ -133,8 +133,8 @@ export default class BookInfo extends wepy.page {
                 wepy.redirectTo({
                   url: './success'
                 })
-              })
-            }, 1500)
+              }, 500)
+            })
           }
         }
       })
