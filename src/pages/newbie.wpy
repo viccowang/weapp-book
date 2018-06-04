@@ -15,9 +15,9 @@
                 placeholder="请填写真实姓名"/>
             </view>
             <view class="block area">
-                <picker class="picker-area"  range="{{areaArray}}" range-key="name" @change="selectArea">
+                <picker class="picker-area"  range="{{areaArray}}" range-key="value" @change="selectArea">
                 <view class="picker-view">
-                    <text class="count">{{ areaArray[selectedArea].name || '请选择办公区' }}</text>
+                    <text class="count">{{ selectedCompany.value || '请选择办公区' }}</text>
                 </view>
             </picker>
             </view>
@@ -30,6 +30,7 @@
 <script>
 import wepy from 'wepy'
 // api
+import { getCompanyList } from '@/api/common'
 import { setUserRealInfo } from '@/api/my'
 
 const reg = /^[\u4e00-\u9fa5]{2,4}$/
@@ -41,15 +42,13 @@ export default class NewBie extends wepy.page {
 
   data = {
     username: '',
-    isShowPage: false,
-    selectedArea: 1,
-    areaArray: [
-        {id: '1', name: '北京办公区'},
-        {id: '2', name: '西安办公区'}
-    ]
+    selectedAreaId: '',
+    selectedCompany: '',
+    areaArray: []
   }
 
   async onLoad () {
+    this.getAreaList()
   }
 
   showError(text) {
@@ -57,6 +56,22 @@ export default class NewBie extends wepy.page {
       title: text,
       icon: 'none'
     })
+  }
+
+  async getAreaList () {
+    try {
+      const companyList = await getCompanyList()
+      if (companyList) {
+        this.areaArray = companyList
+        this.selectedAreaId = this.areaArray[0]['id']
+        this.selectedCompany = this.areaArray[0]
+      }
+      this.$apply()
+    } catch (error) {
+      wepy.showToast({
+        title: '获取办公区列表失败.'
+      })
+    }
   }
 
   methods = {
@@ -67,7 +82,8 @@ export default class NewBie extends wepy.page {
     },
     selectArea(e) {
       const index = parseInt(e.detail.value)
-      this.selectedArea = index
+      this.selectedAreaId = this.areaArray[index]['id']
+      this.selectedCompany = this.areaArray[index]
       this.$apply()
     },
     confirmUserInfo () {
@@ -79,7 +95,7 @@ export default class NewBie extends wepy.page {
           // submit
         setUserRealInfo({
           userName: this.username,
-          groupId: this.selectedArea.toString()
+          companyId: this.selectedAreaId
         }).then(() => {
           wepy.showToast({
             title: '保存成功',

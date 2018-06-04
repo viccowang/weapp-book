@@ -16,7 +16,7 @@
             <view class="block area">
                 <picker class="picker-area"  range="{{areaArray}}" range-key="value" @change="selectArea">
                 <view class="picker-view">
-                    <text class="count">{{ areaArray[selectedArea].value || '请选择办公区' }}</text>
+                    <text class="count">{{ selectedCompany.value || '请选择办公区' }}</text>
                 </view>
             </picker>
             </view>
@@ -41,7 +41,8 @@ export default class UserInfo extends wepy.page {
 
   data = {
     username: '',
-    selectedArea: 1,
+    selectedAreaId: '',
+    selectedCompany: '',
     areaArray: []
   }
 
@@ -64,7 +65,8 @@ export default class UserInfo extends wepy.page {
       const result = await getUserRealInfo()
       if (result) {
         this.username = result.userName
-        this.selectedArea = parseInt(result.companyId)
+        this.selectedAreaId = result.companyId
+        this.selectedCompany = this.areaArray.filter(area => area.id === result.companyId)[0]
       }
       this.$apply()
     } catch (error) {
@@ -75,8 +77,8 @@ export default class UserInfo extends wepy.page {
   }
 
   async onLoad () {
-    this.getAreaList()
-    this.getUserInfo()
+    await this.getAreaList()
+    await this.getUserInfo()
   }
 
   methods = {
@@ -87,7 +89,8 @@ export default class UserInfo extends wepy.page {
     },
     selectArea(e) {
       const index = parseInt(e.detail.value)
-      this.selectedArea = index
+      this.selectedAreaId = this.areaArray[index]['id']
+      this.selectedCompany = this.areaArray[index]
       this.$apply()
     },
     confirmUserInfo() {
@@ -96,10 +99,10 @@ export default class UserInfo extends wepy.page {
       } else if (!reg.test(this.username)) {
         this.showError('你输入的姓名格式不正确.')
       } else {
-          // submit
+        // submit
         setUserRealInfo({
           userName: this.username,
-          groupId: this.selectedArea.toString()
+          companyId: this.selectedAreaId
         }).then(() => {
           wepy.showToast({
             title: '修改成功',
