@@ -35,8 +35,12 @@ async function getBookInfoFromDouBan (isbn) {
   const result = await request({
     url: `/v2/book/isbn/${isbn}`,
     header: { 'Content-Type': 'json' }
-    // absolute: true
   })
+  // const result = await request({
+  //   url: `https://daxian.work/v2/book/isbn/${isbn}`,
+  //   header: { 'Content-Type': 'json' },
+  //   absolute: true
+  // })
   return result
 }
 
