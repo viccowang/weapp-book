@@ -46,7 +46,7 @@ async function scanCodeToBorrowBook (navType) {
     if (bookCode) {
       wepy.showLoading({title: '正在读取书籍内容...'})
       // 获取当前书是否在公司书库内
-      const result = await getBookState({booksIsbn: isbn})
+      const result = await getBookState({bookIsbn: isbn})
       try {
         if (result && result.status) {
           wepy.hideLoading()
@@ -82,7 +82,7 @@ async function scanCodeToReturnBook (navType) {
   if (code) {
     const isbn = code.result
     const bookCode = reg.test(isbn)
-    const param = {booksIsbn: isbn}
+    const param = {bookIsbn: isbn}
     // 检查当前扫码的书是否是公司内的书
     if (bookCode) {
       // 获取当前书是否在公司书库内

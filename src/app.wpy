@@ -67,7 +67,13 @@ export default class extends wepy.app {
           if (res && res.token) {
             wepy.setStorage({
               key: USER_STORAGE_TOKEN_PERFIX,
-              data: res.token
+              data: res.token,
+              success () {
+                wepy.showToast({
+                  title: '登录成功!',
+                  icon: 'success'
+                })
+              }
             })
           } else {
             wepy.showModal({
