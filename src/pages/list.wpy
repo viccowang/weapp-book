@@ -5,6 +5,7 @@
             <image class="avatar" src="{{userInfo.avatarUrl}}" /> 
             <view class="nickName">{{userInfo.nickName}}</view>
              <button wx:if="{{!userInfo}}" class="user-info iconfont icon-wodedianji" open-type="getUserInfo" @tap="getUserInfo"></button>
+             <button class="settings weui-btn mini-btn" size="mini" type="default" hover-class="setting-button-hover" @tap="settingUserInfo">设置</button>
         </view>
         <view class="bookList">
             <view class="list" wx:if="{{bookList.length}}">
@@ -105,6 +106,11 @@ export default class MyBookList extends wepy.page {
       wepy.navigateTo({
         url: `./bookInfo?bookId=${book.isbn13}&readOnly=true`
       })
+    },
+    settingUserInfo () {
+      wepy.navigateTo({
+        url: './userInfo'
+      })
     }
   }
 }
@@ -167,6 +173,22 @@ export default class MyBookList extends wepy.page {
       height:75rpx;
       border:none;
       background:none;
+    }
+
+    .settings {
+      position: absolute;
+      top: 47rpx;
+      right: 40rpx;
+      background-color: #b0bec5;
+      border: 1px solid darken(#b0bec5, 8%);
+
+      &::after {
+        border:none;
+      }
+    }
+
+    .setting-button-hover {
+       background-color: lighten(#b0bec5, 5%);
     }
 
 

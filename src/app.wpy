@@ -26,8 +26,8 @@ setStore(store)
 import { userLogin } from '@/api/login'
 import { getUserInfoState } from '@/api/my'
 import { canUseUserInfo, authUserInfo } from '@/utils/authUserInfo'
-import { USER_STORAGE_TOKEN_PERFIX, IS_ADMIN } from '@/utils/storage'
-import { SET_AUTHORIZED, SET_CANUSE_USERINFO } from '@/store/types'
+import { USER_STORAGE_TOKEN_PERFIX, IS_ADMIN, IS_DEVICE_IPHONEX } from '@/utils/storage'
+import { SET_AUTHORIZED, SET_CANUSE_USERINFO, IS_IPHONEX } from '@/store/types'
 
 export default class extends wepy.app {
   config = {
@@ -41,13 +41,14 @@ export default class extends wepy.app {
       'pages/rateBook',
       'pages/admin/entryBook',
       'pages/admin/entryInfo',
+      'pages/userInfo',
       'pages/other/devInfo'
     ],
     tabBar: {
       color: '#90a4ae',
       selectedColor: '#02a9f4',
       list: [
-        {pagePath: 'pages/index', text: '享阅', iconPath: '/static/book-gray.png', selectedIconPath: '/static/book-active.png'},
+        {pagePath: 'pages/index', text: '阅乎', iconPath: '/static/book-gray.png', selectedIconPath: '/static/book-active.png'},
         {pagePath: 'pages/list', text: '我的', iconPath: '/static/list-gray.png', selectedIconPath: '/static/list-active.png'}
       ]
     },
@@ -107,6 +108,19 @@ export default class extends wepy.app {
             })
             // 配置改用户是否授权了用户资料接口
             self.getUserInfo()
+             // 监测用户是否填入了真实信息,因为后期真实信息在做统计,借阅制度管理时非常重要,
+             // 所以这里必须走该流程
+            getUserInfoState().then(res => {
+              const exitsUserInfo = res.exitsUserInfo
+              // 隐藏登录状态
+              wepy.hideLoading()
+              // 监测通过跳转至首页
+              if (!exitsUserInfo) {
+                wepy.redirectTo({
+                  url: './newbie'
+                })
+              }
+            })
           } else {
             wepy.showModal({
               title: '提醒',
@@ -133,6 +147,9 @@ export default class extends wepy.app {
   async onLaunch() {
     // 从本地获取用户TOKEN,如果失败则重新登录
     const token = wepy.getStorageSync(USER_STORAGE_TOKEN_PERFIX)
+    wepy.showLoading({
+      title: '正在登录,请稍候...'
+    })
     if (token) {
       // 配置全局认证环境
       store.dispatch({ type: SET_AUTHORIZED, payload: true })
@@ -141,6 +158,8 @@ export default class extends wepy.app {
       // 监测用户是否填入了真实信息,因为后期真实信息在做统计,借阅制度管理时非常重要,
       // 所以这里必须走该流程
       const {exitsUserInfo} = await getUserInfoState()
+      // 隐藏登录状态
+      wepy.hideLoading()
       // 监测通过跳转至首页
       if (!exitsUserInfo) {
         wepy.redirectTo({
@@ -150,6 +169,27 @@ export default class extends wepy.app {
     } else {
       this.userLogin()
     }
+
+    //
+    wepy.getStorage({
+      key: IS_DEVICE_IPHONEX,
+      success (res) {
+        store.dispatch({ type: IS_IPHONEX, payload: res.data })
+      },
+      fail () {
+        // iPhone X (GSM+CDMA)<iPhone10,3>
+        wepy.getSystemInfo({
+          success (res) {
+            const isIphoneX = res.model.indexOf('iPhone X') !== -1
+            wepy.setStorage({
+              key: IS_DEVICE_IPHONEX,
+              data: isIphoneX
+            })
+            store.dispatch({ type: IS_IPHONEX, payload: isIphoneX })
+          }
+        })
+      }
+    })
   }
 }
 </script>

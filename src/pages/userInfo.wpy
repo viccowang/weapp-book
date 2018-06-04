@@ -1,13 +1,12 @@
 <template>
-    <view class="newbie-page">
+    <view class="userinfo-page">
         <view class="title">
-             <text class="head">简单一步</text>
-             <text class="sub">为了方便大家借阅,请大家自觉填入真实姓名 :-)</text>
+             <text class="head">修改个人资料</text>
+             <text class="sub">建议填写真实姓名,方便大家借阅图书时使用,办公区域可以根据自己的工作情况自行调整 :-)</text>
         </view>
         <view class="content">
             <view class="block username">
                 <input 
-                auto-focus
                 value="{{username}}" 
                 type="text" 
                 class="weui-input" 
@@ -15,48 +14,69 @@
                 placeholder="请填写真实姓名"/>
             </view>
             <view class="block area">
-                <picker class="picker-area"  range="{{areaArray}}" range-key="name" @change="selectArea">
+                <picker class="picker-area"  range="{{areaArray}}" range-key="value" @change="selectArea">
                 <view class="picker-view">
-                    <text class="count">{{ areaArray[selectedArea].name || '请选择办公区' }}</text>
+                    <text class="count">{{ areaArray[selectedArea].value || '请选择办公区' }}</text>
                 </view>
             </picker>
             </view>
         </view>
         <view class="submit">
-            <button type="primary" @tap="confirmUserInfo">确认</button>
+            <button type="primary" @tap="confirmUserInfo">确认修改</button>
         </view>
     </view>
 </template>
 <script>
 import wepy from 'wepy'
 // api
-import { setUserRealInfo } from '@/api/my'
+import { getCompanyList } from '@/api/common'
+import { getUserRealInfo, setUserRealInfo } from '@/api/my'
 
 const reg = /^[\u4e00-\u9fa5]{2,4}$/
 
-export default class NewBie extends wepy.page {
+export default class UserInfo extends wepy.page {
   config = {
     disableScroll: true
   }
 
   data = {
     username: '',
-    isShowPage: false,
     selectedArea: 1,
-    areaArray: [
-        {id: '1', name: '北京办公区'},
-        {id: '2', name: '西安办公区'}
-    ]
+    areaArray: []
+  }
+
+  async getAreaList () {
+    try {
+      const companyList = await getCompanyList()
+      if (companyList) {
+        this.areaArray = companyList
+      }
+      this.$apply()
+    } catch (error) {
+      wepy.showToast({
+        title: '获取办公区列表失败.'
+      })
+    }
+  }
+
+  async getUserInfo () {
+    try {
+      const result = await getUserRealInfo()
+      if (result) {
+        this.username = result.userName
+        this.selectedArea = parseInt(result.companyId)
+      }
+      this.$apply()
+    } catch (error) {
+      wepy.showToast({
+        title: '获取用户信息失败.'
+      })
+    }
   }
 
   async onLoad () {
-  }
-
-  showError(text) {
-    wepy.showToast({
-      title: text,
-      icon: 'none'
-    })
+    this.getAreaList()
+    this.getUserInfo()
   }
 
   methods = {
@@ -70,7 +90,7 @@ export default class NewBie extends wepy.page {
       this.selectedArea = index
       this.$apply()
     },
-    confirmUserInfo () {
+    confirmUserInfo() {
       if (this.username === '') {
         this.showError('请输入姓名.')
       } else if (!reg.test(this.username)) {
@@ -82,12 +102,10 @@ export default class NewBie extends wepy.page {
           groupId: this.selectedArea.toString()
         }).then(() => {
           wepy.showToast({
-            title: '保存成功',
+            title: '修改成功',
             success: function() {
               setTimeout(() => {
-                wepy.switchTab({
-                  url: 'index'
-                })
+                wepy.navigateBack()
               }, 1000)
             }
           })
@@ -100,7 +118,7 @@ export default class NewBie extends wepy.page {
 }
 </script>
 <style lang="less">
-.newbie-page{
+.userinfo-page {
     height: 100vh;
     padding: 120rpx 55rpx;
 
@@ -165,6 +183,5 @@ export default class NewBie extends wepy.page {
     .submit {
         margin-top:35rpx;
     }
-
 }
 </style>

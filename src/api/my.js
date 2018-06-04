@@ -29,3 +29,12 @@ export function setUserRealInfo (info) {
     data: info
   })
 }
+
+/**
+ * 获取用户录入的真实信息
+ */
+export function getUserRealInfo () {
+  return get({
+    url: '/api/sysUser/userInfo'
+  })
+}
