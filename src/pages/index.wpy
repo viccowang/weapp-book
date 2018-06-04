@@ -22,27 +22,24 @@ import wepy from 'wepy'
 import { connect, getStore } from 'wepy-redux'
 import { authUserInfo } from '@/utils/authUserInfo'
 import { scanCodeToBorrowBook, scanCodeToReturnBook } from '@/utils/scanCode'
-import { getUserIsAdmin } from '@/utils/storage'
+// import { getUserIsAdmin } from '@/utils/storage'
 
 const store = getStore()
 
 @connect({
   canUseUserInfo: state => state.user.canUseUserInfo,
   isAuthorized: state => state.user.isAuthorized,
-  userInfo: state => state.user.userInfo
+  userInfo: state => state.user.userInfo,
+  isAdmin: state => state.user.isAdmin
 })
 export default class IndexPage extends wepy.page {
   config = {
     disableScroll: true
   }
 
-  data = {
-    isAdmin: false
-  }
+  data = {}
 
-  onLoad () {
-    this.isAdmin = getUserIsAdmin()
-  }
+  onLoad () {}
 
   methods = {
     getUserInfo () {

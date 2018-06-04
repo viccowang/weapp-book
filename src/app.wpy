@@ -27,7 +27,7 @@ import { userLogin } from '@/api/login'
 import { getUserInfoState } from '@/api/my'
 import { canUseUserInfo, authUserInfo } from '@/utils/authUserInfo'
 import { USER_STORAGE_TOKEN_PERFIX, IS_ADMIN, IS_DEVICE_IPHONEX } from '@/utils/storage'
-import { SET_AUTHORIZED, SET_CANUSE_USERINFO, IS_IPHONEX } from '@/store/types'
+import { SET_AUTHORIZED, SET_CANUSE_USERINFO, SET_ADMIN, IS_IPHONEX } from '@/store/types'
 
 export default class extends wepy.app {
   config = {
@@ -93,6 +93,7 @@ export default class extends wepy.app {
       success (res) {
         // 登录本地服务器验证获取登录TOKEN
         userLogin({code: res.code}).then(res => {
+          // console.log('login res', res)
           if (res && res.token) {
             // 配置全局TOKEN
             wepy.setStorage({
@@ -102,10 +103,12 @@ export default class extends wepy.app {
             // 配置全局认证环境
             store.dispatch({ type: SET_AUTHORIZED, payload: true })
             // 配置该用户是否为管理员
+            const isAdmin = res.isAdmin === '1'
             wepy.setStorage({
               key: IS_ADMIN,
-              data: res.isAdmin === '1'
+              data: isAdmin
             })
+            store.dispatch({type: SET_ADMIN, payload: isAdmin})
             // 配置改用户是否授权了用户资料接口
             self.getUserInfo()
              // 监测用户是否填入了真实信息,因为后期真实信息在做统计,借阅制度管理时非常重要,
@@ -166,6 +169,13 @@ export default class extends wepy.app {
           url: './newbie'
         })
       }
+      // set user is Admin or not
+      wepy.getStorage({
+        key: IS_ADMIN,
+        success (res) {
+          store.dispatch({type: SET_ADMIN, payload: res.data})
+        }
+      })
     } else {
       this.userLogin()
     }
