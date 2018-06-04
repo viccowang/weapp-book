@@ -4,6 +4,7 @@
 import wepy from 'wepy'
 
 export const USER_STORAGE_TOKEN_PERFIX = 'bookUserAuthToken'
+export const USER_IS_AUTHORIZED = 'userIsAuthorized'
 // export const IS_USER_CONFIRM_INFO = 'isUserConfirmInfo'
 export const IS_ADMIN = 'bookUserIsAdmin'
 

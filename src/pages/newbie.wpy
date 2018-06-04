@@ -29,6 +29,8 @@
 </template>
 <script>
 import wepy from 'wepy'
+// api
+import { setUserRealInfo } from '@/api/my'
 
 const reg = /^[\u4e00-\u9fa5]{2,4}$/
 
@@ -39,11 +41,15 @@ export default class NewBie extends wepy.page {
 
   data = {
     username: '',
+    isShowPage: false,
     selectedArea: 1,
     areaArray: [
         {id: '1', name: '北京工作区'},
         {id: '2', name: '西安工作区'}
     ]
+  }
+
+  async onLoad () {
   }
 
   showError(text) {
@@ -71,10 +77,22 @@ export default class NewBie extends wepy.page {
         this.showError('你输入的姓名格式不正确.')
       } else {
           // submit
-        console.log(this.username)
-        console.log(this.selectedArea)
-        wepy.switchTab({
-          url: 'index'
+        setUserRealInfo({
+          userName: this.username,
+          groupId: this.selectedArea.toString()
+        }).then(() => {
+          wepy.showToast({
+            title: '保存成功',
+            success: function() {
+              setTimeout(() => {
+                wepy.switchTab({
+                  url: 'index'
+                })
+              }, 1000)
+            }
+          })
+        }).catch(() => {
+          wepy.showError('保存信息失败,请联系钱大仙处理.')
         })
       }
     }

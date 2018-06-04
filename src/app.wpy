@@ -19,18 +19,21 @@ import 'wepy-async-function'
 import { setStore } from 'wepy-redux'
 import configStore from './store'
 
-// api
-import { userLogin } from '@/api/login'
-import { USER_STORAGE_TOKEN_PERFIX, IS_ADMIN } from '@/utils/storage'
-// import { SET_ADMIN } from '@/store/types'
-
 const store = configStore()
 setStore(store)
+
+// api
+import { userLogin } from '@/api/login'
+import { getUserInfoState } from '@/api/my'
+import { canUseUserInfo, authUserInfo } from '@/utils/authUserInfo'
+import { USER_STORAGE_TOKEN_PERFIX, IS_ADMIN } from '@/utils/storage'
+import { SET_AUTHORIZED, SET_CANUSE_USERINFO } from '@/store/types'
 
 export default class extends wepy.app {
   config = {
     pages: [
       'pages/index',
+      'pages/newbie',
       'pages/list',
       'pages/bookInfo',
       'pages/turnback',
@@ -38,8 +41,7 @@ export default class extends wepy.app {
       'pages/rateBook',
       'pages/admin/entryBook',
       'pages/admin/entryInfo',
-      'pages/other/devInfo',
-      'pages/newbie'
+      'pages/other/devInfo'
     ],
     tabBar: {
       color: '#90a4ae',
@@ -65,24 +67,46 @@ export default class extends wepy.app {
     this.use('requestfix')
   }
 
+  // 用户是否授权了用户资料接口,
+  // 如果授权了则自动获取用户信息
+  getUserInfo() {
+    canUseUserInfo()
+    .then(() => {
+      store.dispatch({
+        type: SET_CANUSE_USERINFO,
+        payload: true
+      })
+    })
+    .then(() => {
+      // 获取用户信息存入store
+      authUserInfo(store)
+    })
+    .catch(() => {})
+  }
+
+  // 登录时属于静默登录状态,
+  // 除非有错误,否则用户不会感知
   userLogin() {
+    const self = this
     wepy.login({
       success (res) {
         // 登录本地服务器验证获取登录TOKEN
         userLogin({code: res.code}).then(res => {
-          console.log(res)
           if (res && res.token) {
-            // set token
+            // 配置全局TOKEN
             wepy.setStorage({
               key: USER_STORAGE_TOKEN_PERFIX,
               data: res.token
             })
-            // set Administrator
+            // 配置全局认证环境
+            store.dispatch({ type: SET_AUTHORIZED, payload: true })
+            // 配置该用户是否为管理员
             wepy.setStorage({
               key: IS_ADMIN,
               data: res.isAdmin === '1'
             })
-            // store.dispatch({ type: SET_ADMIN, payload: res.isAdmin === '1' })
+            // 配置改用户是否授权了用户资料接口
+            self.getUserInfo()
           } else {
             wepy.showModal({
               title: '提醒',
@@ -90,10 +114,6 @@ export default class extends wepy.app {
               showCancel: false
             })
           }
-        })
-        // TODO: 这里根据接口验证用户是否完成了用户信息得录入。
-        wepy.navigateTo({
-          url: './newbie'
         })
       },
       fail () {
@@ -107,27 +127,29 @@ export default class extends wepy.app {
   }
 
   /**
-   * 首次登录需要先检查是否有session
-   * TODO: 这里只需要检查是否有TOKEN. 不需要保持登录状态
+   * 系统目前只需要拾取用户最基础信息,因此不需要持续保持登录状态.
+   * 这里只需要检查是否有TOKEN.
    */
-  onLaunch() {
-    const self = this
-    wepy.checkSession({
-        // 未过期
-      success (res) {
-        // 从本地获取用户TOKEN,如果失败则重新登录
-        wepy.getStorage({
-          key: USER_STORAGE_TOKEN_PERFIX,
-          fail () {
-            self.userLogin()
-          }
+  async onLaunch() {
+    // 从本地获取用户TOKEN,如果失败则重新登录
+    const token = wepy.getStorageSync(USER_STORAGE_TOKEN_PERFIX)
+    if (token) {
+      // 配置全局认证环境
+      store.dispatch({ type: SET_AUTHORIZED, payload: true })
+      // 配置改用户是否授权了用户资料接口
+      this.getUserInfo()
+      // 监测用户是否填入了真实信息,因为后期真实信息在做统计,借阅制度管理时非常重要,
+      // 所以这里必须走该流程
+      const {exitsUserInfo} = await getUserInfoState()
+      // 监测通过跳转至首页
+      if (!exitsUserInfo) {
+        wepy.redirectTo({
+          url: './newbie'
         })
-      },
-      // 过期则需要重新登录
-      fail () {
-        this.userLogin()
       }
-    })
+    } else {
+      this.userLogin()
+    }
   }
 }
 </script>

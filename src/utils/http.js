@@ -13,9 +13,11 @@ function handlerStatus (res) {
     wepy.showToast({
       title: '服务器响应失败!',
       icon: 'none',
-      duration: 2000
+      duration: 2000,
+      success () {
+        throw Error(res.data)
+      }
     })
-    return null
   }
 }
 
@@ -31,7 +33,6 @@ function handlerResponse (res) {
       icon: 'none',
       duration: 2000
     })
-    return null
   }
 }
 

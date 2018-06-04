@@ -1,9 +1,10 @@
 <template>
     <view class="page">
-      <view wx:if="{{isAuthorized}}">
+      <view>
         <view class="header">
             <image class="avatar" src="{{userInfo.avatarUrl}}" /> 
             <view class="nickName">{{userInfo.nickName}}</view>
+             <button wx:if="{{!userInfo}}" class="user-info iconfont icon-wodedianji" open-type="getUserInfo" @tap="getUserInfo"></button>
         </view>
         <view class="bookList">
             <view class="list" wx:if="{{bookList.length}}">
@@ -26,15 +27,17 @@
             </view>
         </view>
       </view>  
-      <view class="noLoginPage" wx:else>
+      <!-- <view class="noLoginPage" wx:else>
          <button wx:if="{{!isAuthorized}}" class="loginBtn" open-type="getUserInfo" @tap="getUserInfo">快速登录</button>
-      </view>
+      </view> -->
     </view>
 </template>
 <script>
 import wepy from 'wepy'
-import { connect } from 'wepy-redux'
+import { connect, getStore } from 'wepy-redux'
 import { authUserInfo } from '@/utils/authUserInfo'
+
+const store = getStore()
 
 // api
 import { myBorrowList } from '@/api/my'
@@ -96,7 +99,7 @@ export default class MyBookList extends wepy.page {
 
   methods = {
     getUserInfo () {
-      authUserInfo()
+      authUserInfo(store)
     },
     showBookDetail (book) {
       wepy.navigateTo({
@@ -149,21 +152,39 @@ export default class MyBookList extends wepy.page {
       font-size:28rpx;
     }
 
-    .loginBtn {
-      width:120rpx;
+    .user-info {
       position:absolute;
-      top:75rpx;
-      left:200rpx;
-      padding:0;
-      margin:0;
-      font-size:28rpx;
-      color:#fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      top:37rpx;
+      left:50%;
+      margin-left:-35rpx;
+      font-size:45rpx;
+      color: #455a64;
+      padding: 0;
+      width:75rpx;
+      height:75rpx;
+      border:none;
       background:none;
-
-      &:after {
-        border:none;
-      }
     }
+
+
+    // .loginBtn {
+    //   width:120rpx;
+    //   position:absolute;
+    //   top:75rpx;
+    //   left:200rpx;
+    //   padding:0;
+    //   margin:0;
+    //   font-size:28rpx;
+    //   color:#fff;
+    //   background:none;
+
+    //   &:after {
+    //     border:none;
+    //   }
+    // }
 
   }
 
