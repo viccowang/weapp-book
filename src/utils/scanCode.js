@@ -146,25 +146,23 @@ function showBookInfo (isbn) {
 
 // 录入图书
 async function scanCodeToEntryBook () {
-  const res = await scanCode()
-  if (res) {
-    const isbn = res.result
-    const bookCode = reg.test(isbn)
-    // ISBN码验证
-    if (bookCode) {
-      // TODO: 换域名
-      // const bookInfoFromDouBan = await getBookInfoFromDouBan(isbn)
-      // if (bookInfoFromDouBan) {
-        // const result = await entryBook({data: bookInfoFromDouBan})
-      wepy.navigateTo({
-        url: `./entryInfo?bookId=${isbn}&isAdmin=true`
-      })
-      // }
-      // const result = await entryBook({b})
+  try {
+    const res = await scanCode()
+    if (res) {
+      const isbn = res.result
+      const bookCode = reg.test(isbn)
+      // ISBN码验证
+      if (bookCode) {
+        wepy.navigateTo({
+          url: `./entryInfo?bookId=${isbn}&isAdmin=true`
+        })
+        // }
+        // const result = await entryBook({b})
+      }
+    } else {
+      showError('没有扫到书籍条形码')
     }
-  } else {
-    showError('没有扫到书籍条形码')
-  }
+  } catch (error) {}
 }
 
 export {
