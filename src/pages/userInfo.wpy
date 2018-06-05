@@ -103,8 +103,8 @@ export default class UserInfo extends wepy.page {
     },
     confirmUserInfo() {
       const self = this
-      if (this.username === '') {
-        this.showError('请输入姓名.')
+      if (this.username === '' || this.selectedAreaId === '') {
+        this.showError('姓名和办公区都不能为空.')
       } else if (!reg.test(this.username)) {
         this.showError('你输入的姓名格式不正确.')
       } else {
@@ -234,7 +234,7 @@ export default class UserInfo extends wepy.page {
     }
 
     .logout {
-      margin-top: 55rpx;
+      margin-top: 85rpx;
     }
 }
 </style>
