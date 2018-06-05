@@ -5,7 +5,7 @@
             <text class="summary">管理员可以在该页面为图书库快速添加图书.</text>
         </view>
         <view class="admin-content">
-            <button type="primary" @tap="scanCodeToAddBook">扫码加书</button>
+            <button type="primary" @tap="scanCodeToAddBook" disabled="{{scanCodeDisabled}}">扫码加书</button>
         </view>
     </view>
 </template>
@@ -19,10 +19,22 @@ export default class EntryBook extends wepy.page {
     disableScroll: true
   }
 
-  data = { }
+  data = {
+    scanCodeDisabled: false
+  }
+
+  onShow () {
+    this.scanCodeDisabled = false
+  }
+
+  onHide () {
+    this.scanCodeDisabled = false
+  }
 
   methods = {
     scanCodeToAddBook () {
+      if (this.scanCodeDisabled) return
+      this.scanCodeDisabled = true
       scanCodeToEntryBook()
     }
   }

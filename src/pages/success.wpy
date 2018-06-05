@@ -5,8 +5,8 @@
             <view class="success-con">借阅成功! 记得归还哦~</view>
         </view>
         <view class="control">
-            <button class="weui-btn" type="default" @tap="scanCode">再借一本</button>
-            <button class="weui-btn" type="primary" @tap="toMyBag">我的书架</button>
+            <button class="weui-btn" type="default" @tap="scanCode" disabled="{{buttonDisabled}}">再借一本</button>
+            <button class="weui-btn" type="primary" @tap="toMyBag" disabled="{{buttonDisabled}}">我的书架</button>
             </view>
         </view>
     </view>
@@ -20,13 +20,29 @@ export default class BorrowSuccess extends wepy.page {
     disableScroll: true
   }
 
+  onShow () {
+    this.buttonDisabled = false
+  }
+
+  onHide () {
+    this.buttonDisabled = false
+  }
+
+  data = {
+    buttonDisabled: false
+  }
+
   methods = {
       //
     scanCode () {
+      if (this.buttonDisabled) return
+      this.buttonDisabled = true
       scanCodeToBorrowBook('redirectTo')
     },
     //
     toMyBag () {
+      if (this.buttonDisabled) return
+      this.buttonDisabled = true
       wepy.switchTab({
         url: './list'
       })

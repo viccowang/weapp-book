@@ -22,7 +22,10 @@
             </view>
         </view>
         <view class="submit">
-            <button type="primary" @tap="confirmUserInfo">确认修改</button>
+            <button type="primary" @tap="confirmUserInfo"  disabled="{{submitDisabled}}" loading="{{submitLoading}}">确认修改</button>
+        </view>
+        <view class="logout">
+            <button type="warn" plain @tap="logout"  disabled="{{logoutDisabled}}" loading="{{logoutLoading}}">重新登录</button>
         </view>
     </view>
 </template>
@@ -31,6 +34,7 @@ import wepy from 'wepy'
 // api
 import { getCompanyList } from '@/api/common'
 import { getUserRealInfo, setUserRealInfo } from '@/api/my'
+import userLoginFunc from '@/utils/userLogin'
 
 const reg = /^[\u4e00-\u9fa5]{2,4}$/
 
@@ -43,7 +47,11 @@ export default class UserInfo extends wepy.page {
     username: '',
     selectedAreaId: '',
     selectedCompany: '',
-    areaArray: []
+    areaArray: [],
+    submitDisabled: false,
+    submitLoading: false,
+    logoutDisabled: false,
+    logoutLoading: false
   }
 
   async getAreaList () {
@@ -94,16 +102,20 @@ export default class UserInfo extends wepy.page {
       this.$apply()
     },
     confirmUserInfo() {
+      const self = this
       if (this.username === '') {
         this.showError('请输入姓名.')
       } else if (!reg.test(this.username)) {
         this.showError('你输入的姓名格式不正确.')
       } else {
+        this.submitDisabled = true
+        this.submitLoading = true
         // submit
         setUserRealInfo({
           userName: this.username,
           companyId: this.selectedAreaId
         }).then(() => {
+          self.submitLoading = false
           wepy.showToast({
             title: '修改成功',
             success: function() {
@@ -112,10 +124,44 @@ export default class UserInfo extends wepy.page {
               }, 1000)
             }
           })
+          self.$apply()
         }).catch(() => {
           wepy.showError('保存信息失败,请联系钱大仙处理.')
+          self.submitDisabled = false
+          self.submitLoading = false
+          self.$apply()
         })
       }
+    },
+    logout () {
+      const self = this
+      this.logoutDisabled = true
+      this.logoutLoading = true
+      wepy.showModal({
+        title: '提醒',
+        content: '确认要重新登录吗?',
+        success (res) {
+          if (res.confirm) {
+            userLoginFunc().then(() => {
+              wepy.showToast({
+                title: '登录成功!',
+                success () {
+                  setTimeout(() => {
+                    wepy.switchTab({
+                      url: 'index'
+                    })
+                  }, 1500)
+                }
+              })
+            })
+          }
+        },
+        complete () {
+          self.logoutDisabled = false
+          self.logoutLoading = false
+          self.$apply()
+        }
+      })
     }
   }
 }
@@ -185,6 +231,10 @@ export default class UserInfo extends wepy.page {
 
     .submit {
         margin-top:35rpx;
+    }
+
+    .logout {
+      margin-top: 55rpx;
     }
 }
 </style>

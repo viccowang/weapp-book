@@ -23,7 +23,7 @@
             </view>
         </view>
         <view class="submit">
-            <button type="primary" @tap="confirmUserInfo">确认</button>
+            <button type="primary" @tap="confirmUserInfo" disabled="{{submitDisabled}}" loading="{{submitLoading}}">确认</button>
         </view>
     </view>
 </template>
@@ -44,7 +44,9 @@ export default class NewBie extends wepy.page {
     username: '',
     selectedAreaId: '',
     selectedCompany: '',
-    areaArray: []
+    areaArray: [],
+    submitDisabled: false,
+    submitLoading: false
   }
 
   async onLoad () {
@@ -87,16 +89,20 @@ export default class NewBie extends wepy.page {
       this.$apply()
     },
     confirmUserInfo () {
+      const self = this
       if (this.username === '') {
         this.showError('请输入姓名.')
       } else if (!reg.test(this.username)) {
         this.showError('你输入的姓名格式不正确.')
       } else {
+        this.submitDisabled = true
+        this.submitLoading = true
           // submit
         setUserRealInfo({
           userName: this.username,
           companyId: this.selectedAreaId
         }).then(() => {
+          self.submitLoading = false
           wepy.showToast({
             title: '保存成功',
             success: function() {
@@ -107,8 +113,12 @@ export default class NewBie extends wepy.page {
               }, 1000)
             }
           })
+          self.$apply()
         }).catch(() => {
           wepy.showError('保存信息失败,请联系钱大仙处理.')
+          self.submitDisabled = false
+          self.submitLoading = false
+          self.$apply()
         })
       }
     }

@@ -17,10 +17,10 @@
                 <rateCom :rate.sync="bookRate"></rateCom>
             </view>
             <view class="block submit" wx:if="{{isReadOnly === 'false'}}">
-                <button class="weui-btn" type="primary" @tap="confirmToBorrow">借阅</button>
+                <button class="weui-btn" type="primary" @tap="confirmToBorrow" disabled="{{buttonDisabled}}" loading="{{buttonLoading}}">借阅</button>
             </view>
              <view class="block submit" wx:if="{{ isReadOnly === 'true' && isBorrowedByUser }}">
-                <button class="weui-btn" type="primary" @tap="confirmToReturn">归还</button>
+                <button class="weui-btn" type="primary" @tap="confirmToReturn" disabled="{{buttonDisabled}}" loading="{{buttonLoading}}">归还</button>
             </view>
             <view class="blank" />
             <view class="iphoneBlank" wx:if="{{isIphoneX}}" />
@@ -49,6 +49,8 @@ export default class BookInfo extends wepy.page {
     isShowBookDeskHandler: false,
     isBorrowedByUser: false,
     bookDescHeight: 'auto',
+    buttonDisabled: false,
+    buttonLoading: false,
     backColor: '',
     bookRate: '',
     bookInfo: {
@@ -63,6 +65,11 @@ export default class BookInfo extends wepy.page {
       summary: ''
 
     }
+  }
+
+  setButtonState (state) {
+    this.buttonDisabled = state
+    this.buttonLoading = state
   }
 
   initBookPage (bookInfo) {
@@ -132,6 +139,7 @@ export default class BookInfo extends wepy.page {
     // 借阅
     confirmToBorrow () {
       const self = this
+      this.setButtonState(true)
       wepy.showModal({
         title: '提醒',
         content: `确定要借阅<<${this.bookInfo.title}>>吗?`,
@@ -153,12 +161,17 @@ export default class BookInfo extends wepy.page {
               }, 500)
             })
           }
+        },
+        complete () {
+          self.setButtonState(false)
+          self.$apply()
         }
       })
     },
     // 还书
     confirmToReturn () {
       const self = this
+      this.setButtonState(true)
       wepy.showModal({
         title: '提醒',
         content: `确定要归还<<${this.bookInfo.title}>>吗?`,
@@ -178,6 +191,10 @@ export default class BookInfo extends wepy.page {
               }, 500)
             })
           }
+        },
+        complete () {
+          self.setButtonState(false)
+          self.$apply()
         }
       })
     },

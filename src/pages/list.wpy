@@ -5,7 +5,9 @@
             <image class="avatar" src="{{userInfo.avatarUrl}}" /> 
             <view class="nickName">{{userInfo.nickName}}</view>
              <button wx:if="{{!userInfo}}" class="user-info iconfont icon-wodedianji" open-type="getUserInfo" @tap="getUserInfo"></button>
-             <button class="settings weui-btn mini-btn" size="mini" type="default" hover-class="setting-button-hover" @tap="settingUserInfo">设置</button>
+             <button class="settings weui-btn mini-btn" 
+             size="mini" type="default" hover-class="setting-button-hover" 
+             @tap="settingUserInfo" disabled="{{buttonClicked}}">设置</button>
         </view>
         <view class="bookList">
             <view class="list" wx:if="{{bookList.length}}">
@@ -58,15 +60,18 @@ export default class MyBookList extends wepy.page {
   }
 
   data = {
-    bookList: []
+    bookList: [],
+    buttonClicked: false
   }
-
-  // onLoad (queryData) {
-  //   this.getBookList()
-  // }
 
   onShow() {
     this.onPullDownRefresh()
+    this.buttonClicked = false
+  }
+
+  onHide() {
+    console.log('onHide')
+    this.buttonClicked = false
   }
 
  // 下拉刷新列表
@@ -103,11 +108,15 @@ export default class MyBookList extends wepy.page {
       authUserInfo(store)
     },
     showBookDetail (book) {
+      if (this.buttonClicked) return
+      this.buttonClicked = true
       wepy.navigateTo({
         url: `./bookInfo?bookId=${book.isbn13}&readOnly=true`
       })
     },
     settingUserInfo () {
+      if (this.buttonClicked) return
+      this.buttonClicked = true
       wepy.navigateTo({
         url: './userInfo'
       })

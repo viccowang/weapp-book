@@ -18,7 +18,7 @@
                 </view>
             </picker>
             <view class="block submit">
-                <button class="weui-btn" type="primary" @tap="confirmToBorrow">加入书库</button>
+                <button class="weui-btn" type="primary" @tap="confirmToBorrow" disabled="{{addBookBtnDisabled}}" loading="{{addBookBtnLoading}}">加入书库</button>
             </view>
             <view class="blank" />
         </view>
@@ -38,6 +38,8 @@ export default class EntryBookInfo extends wepy.page {
     selectedCount: 1,
     booksCount: [],
     bookDescHeight: 'auto',
+    addBookBtnDisabled: false,
+    addBookBtnLoading: false,
     backColor: '',
     bookInfo: {
       title: '',
@@ -61,6 +63,11 @@ export default class EntryBookInfo extends wepy.page {
     for (let i = 1; i < 21; i++) {
       this.booksCount.push(i)
     }
+  }
+
+  setBtnState (state) {
+    this.addBookBtnDisabled = state
+    this.addBookBtnLoading = state
   }
 
  // 这里应该首先请求后端服务获取图书信息,
@@ -102,6 +109,7 @@ export default class EntryBookInfo extends wepy.page {
     // 借阅
     confirmToBorrow () {
       const self = this
+      this.setBtnState(true)
       wepy.showModal({
         title: '提醒',
         content: `确定要加入${this.selectedCount}本<<${this.bookInfo.title}>>吗?`,
@@ -119,6 +127,10 @@ export default class EntryBookInfo extends wepy.page {
               })
             })
           }
+        },
+        complete () {
+          self.setBtnState(false)
+          self.$apply()
         }
       })
     },
