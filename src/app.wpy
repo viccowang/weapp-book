@@ -21,8 +21,8 @@ import configStore from './store'
 
 // api
 import { userLogin } from '@/api/login'
-import { USER_STORAGE_TOKEN_PERFIX, IS_USER_CONFIRM_INFO, IS_ADMIN } from '@/utils/storage'
-import { SET_ADMIN } from '@/store/types'
+import { USER_STORAGE_TOKEN_PERFIX, IS_ADMIN } from '@/utils/storage'
+// import { SET_ADMIN } from '@/store/types'
 
 const store = configStore()
 setStore(store)
@@ -45,7 +45,7 @@ export default class extends wepy.app {
       color: '#90a4ae',
       selectedColor: '#02a9f4',
       list: [
-        {pagePath: 'pages/index', text: '借阅', iconPath: '/static/book-gray.png', selectedIconPath: '/static/book-active.png'},
+        {pagePath: 'pages/index', text: '享阅', iconPath: '/static/book-gray.png', selectedIconPath: '/static/book-active.png'},
         {pagePath: 'pages/list', text: '我的', iconPath: '/static/list-gray.png', selectedIconPath: '/static/list-active.png'}
       ]
     },
@@ -53,7 +53,7 @@ export default class extends wepy.app {
       // navigationStyle: 'custom',
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: '书架',
+      navigationBarTitleText: '阅乎',
       navigationBarTextStyle: 'black'
     }
   }
@@ -68,6 +68,7 @@ export default class extends wepy.app {
   userLogin() {
     wepy.login({
       success (res) {
+        // 登录本地服务器验证获取登录TOKEN
         userLogin({code: res.code}).then(res => {
           console.log(res)
           if (res && res.token) {
@@ -81,21 +82,18 @@ export default class extends wepy.app {
               key: IS_ADMIN,
               data: res.isAdmin === '1'
             })
-            store.dispatch({ type: SET_ADMIN, payload: res.isAdmin === '1' })
-            // set user info
-            // console.log(wepy.getStorageSync(IS_USER_CONFIRM_INFO))
-            // if (!wepy.getStorageSync(IS_USER_CONFIRM_INFO)) {
-            //   wepy.redirectTo({
-            //     url: './newbie'
-            //   })
-            // }
+            // store.dispatch({ type: SET_ADMIN, payload: res.isAdmin === '1' })
           } else {
             wepy.showModal({
               title: '提醒',
-              content: '登录获取用户Token失败,请联系钱大仙确认服务器无问题.',
+              content: '获取用户Token失败,请联系钱大仙确认服务器无问题.',
               showCancel: false
             })
           }
+        })
+        // TODO: 这里根据接口验证用户是否完成了用户信息得录入。
+        wepy.navigateTo({
+          url: './newbie'
         })
       },
       fail () {
@@ -110,8 +108,10 @@ export default class extends wepy.app {
 
   /**
    * 首次登录需要先检查是否有session
+   * TODO: 这里只需要检查是否有TOKEN. 不需要保持登录状态
    */
   onLaunch() {
+    const self = this
     wepy.checkSession({
         // 未过期
       success (res) {
@@ -119,17 +119,7 @@ export default class extends wepy.app {
         wepy.getStorage({
           key: USER_STORAGE_TOKEN_PERFIX,
           fail () {
-            wepy.showModal({
-              title: '提醒',
-              content: '未获取到用户Token,需要重新登录获取.',
-              confirmText: '重新获取',
-              showCancel: false,
-              success (res) {
-                if (res.confirm) {
-                  this.userLogin()
-                }
-              }
-            })
+            self.userLogin()
           }
         })
       },
