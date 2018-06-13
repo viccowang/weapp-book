@@ -7,7 +7,6 @@
         <view class="control">
             <button class="weui-btn" type="default" @tap="scanCode" disabled="{{buttonDisabled}}">再借一本</button>
             <button class="weui-btn" type="primary" @tap="toMyBag" disabled="{{buttonDisabled}}">我的书架</button>
-            </view>
         </view>
     </view>
 </template>

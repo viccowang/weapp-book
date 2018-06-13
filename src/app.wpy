@@ -108,15 +108,17 @@ export default class extends wepy.app {
       this.getUserInfo()
       // 监测用户是否填入了真实信息,因为后期真实信息在做统计,借阅制度管理时非常重要,
       // 所以这里必须走该流程
-      const {exitsUserInfo} = await getUserInfoState()
+      try {
+        const {exitsUserInfo} = await getUserInfoState()
+        // 监测通过跳转至首页
+        if (!exitsUserInfo) {
+          wepy.redirectTo({
+            url: './newbie'
+          })
+        }
+      } catch (error) { }
       // 隐藏登录状态
       wepy.hideLoading()
-      // 监测通过跳转至首页
-      if (!exitsUserInfo) {
-        wepy.redirectTo({
-          url: './newbie'
-        })
-      }
       // set user is Admin or not
       wepy.getStorage({
         key: IS_ADMIN,

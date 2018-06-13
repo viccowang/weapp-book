@@ -1,5 +1,6 @@
 import wepy from 'wepy'
 import { getUserToken } from './storage'
+import userLoginFunc from './userLogin'
 
 // const remoteServer = 'http://192.168.10.241:3000/mock/205'
 // const remoteServer = 'http://192.168.10.166:9651'
@@ -23,8 +24,18 @@ function handlerStatus (res) {
 
 function handlerResponse (res) {
   if (!res) return null
-  if (res.head && res.head.code === '200') {
-    return res.data
+  if (res.head) {
+    if (res.head.code === '200') {
+      return res.data
+    } else if (res.head.code === '401') {
+      // wepy.showModal({
+      //   content: '服务器验证失败,需要重新登录',
+      //   showCancel: false,
+      //   success () {
+      //   }
+      // })
+      userLoginFunc()
+    }
   } else if (!res.head && !res.data) {
     return res
   } else {

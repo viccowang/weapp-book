@@ -22,12 +22,25 @@ function getUserInfo() {
     .catch(() => {})
 }
 
+function clearUserLoginInfo () {
+// 清空所有已存的缓存数据
+  wepy.clearStorage()
+  //
+  const store = getStore()
+  //
+  store.dispatch({ type: SET_AUTHORIZED, payload: false })
+  store.dispatch({type: SET_ADMIN, payload: false})
+}
+
 /**
  * 调用微信接口后生产CODE, 与服务端请求获取用户TOKEN, 并做一些后续工作
  */
 export default function userLoginFunc () {
   return new Promise((resolve, reject) => {
     wepy.showLoading({ title: '正在登录...' })
+    // 初始化所有值
+    clearUserLoginInfo()
+    // 开启登录
     wepy.login({
       success (res) {
         const store = getStore()
@@ -54,13 +67,18 @@ export default function userLoginFunc () {
           // 所以这里必须走该流程
             getUserInfoState().then(res => {
               const exitsUserInfo = res.exitsUserInfo
-            // 隐藏登录状态
-              wepy.hideLoading()
-            // 监测通过跳转至首页
+              // 监测通过跳转至首页
               if (!exitsUserInfo) {
                 wepy.redirectTo({
-                  url: './newbie'
+                  url: './newbie',
+                  success () {
+                    // 隐藏登录状态
+                    wepy.hideLoading()
+                  }
                 })
+              } else {
+                // 隐藏登录状态
+                wepy.hideLoading()
               }
             })
             resolve()
