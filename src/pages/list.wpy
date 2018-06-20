@@ -253,7 +253,8 @@ export default class MyBookList extends wepy.page {
           flex:1 auto;
           display: flex;
           flex-direction: column;
-          margin-left:15rpx;
+          margin:0 15rpx;
+          overflow: hidden;
           color: lighten(#455a64, 5%);
 
           .list-cell-line {
@@ -261,7 +262,10 @@ export default class MyBookList extends wepy.page {
             padding: 4rpx 0;
 
             &.title {
-
+              text-overflow: ellipsis;
+              word-wrap: break-word;
+              white-space:nowrap;
+              overflow: hidden;
             }
 
             &.summary {

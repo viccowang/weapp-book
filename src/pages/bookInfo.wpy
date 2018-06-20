@@ -257,6 +257,13 @@ export default class BookInfo extends wepy.page {
 
             &.bookDesc {
 
+                .title {
+                  text-overflow: ellipsis;
+                  word-wrap: break-word;
+                  white-space:nowrap;
+                  overflow: hidden;
+                }
+
                 .desc {
                     font-size:28rpx;
                     overflow: hidden;
