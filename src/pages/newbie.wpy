@@ -50,7 +50,8 @@ export default class NewBie extends wepy.page {
   }
 
   async onLoad () {
-    this.getAreaList()
+    await this.getAreaList()
+    // this.getLocationAuto()
   }
 
   showError(text) {
@@ -65,8 +66,7 @@ export default class NewBie extends wepy.page {
       const companyList = await getCompanyList()
       if (companyList) {
         this.areaArray = companyList
-        this.selectedAreaId = this.areaArray[0]['id']
-        this.selectedCompany = this.areaArray[0]
+        this.getLocationAuto(companyList)
       }
       this.$apply()
     } catch (error) {
@@ -74,6 +74,34 @@ export default class NewBie extends wepy.page {
         title: '获取办公区列表失败.'
       })
     }
+  }
+
+  async whereAreYou ({latitude, longitude}, cityList) {
+    return cityList.filter(city => (latitude < city.cityFence.latMax && latitude > city.cityFence.latMin &&
+         longitude < city.cityFence.lngMax && longitude > city.cityFence.lngMin))
+  }
+
+  async getLocationAuto (cityList) {
+    const self = this
+    wepy.getLocation({
+      type: 'gcj02',
+      success (res) {
+        self.whereAreYou(res, cityList).then(result => {
+          if (result.length) {
+            self.selectedAreaId = result[0].id
+            self.selectedCompany = result[0]
+          } else {
+            self.selectedAreaId = self.areaArray[0].id
+            self.selectedCompany = self.areaArray[0]
+          }
+          self.$apply()
+        })
+      },
+      fail () {
+        self.selectedAreaId = ''
+        self.selectedCompany = ''
+      }
+    })
   }
 
   methods = {
@@ -94,6 +122,8 @@ export default class NewBie extends wepy.page {
         this.showError('请输入姓名.')
       } else if (!reg.test(this.username)) {
         this.showError('你输入的姓名格式不正确.')
+      } else if (this.selectedAreaId === '') {
+        this.showError('请选择你所在的办公区')
       } else {
         this.submitDisabled = true
         this.submitLoading = true
