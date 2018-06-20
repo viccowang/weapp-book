@@ -1,10 +1,10 @@
 import wepy from 'wepy'
 import { getUserToken } from './storage'
 
-const remoteServer = 'http://192.168.10.241:3000/mock/205'
+// const remoteServer = 'http://192.168.10.241:3000/mock/205'
 // const remoteServer = 'http://192.168.10.166:9651'
 // const remoteServer = 'https://39.107.77.177'
-// const remoteServer = 'https://daxian.work'
+const remoteServer = 'https://daxian.work'
 
 function handlerStatus (res) {
   if (res.statusCode === 200) {
